@@ -1,6 +1,7 @@
 package com.bolcom.assignment.models;
 
 import java.util.UUID;
+import java.util.stream.IntStream;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -34,10 +35,13 @@ public class Game {
   private GameStatus status;
 
   @NotNull
-  private int[] board = new int[12];
+  private int[] board;
 
   @NotNull
-  private boolean playerOneTurn;
+  private int playerTurn;
+
+  @NotNull
+  private int totalTurn;
 
   public Game() {
   }
@@ -45,6 +49,9 @@ public class Game {
   public Game(Player playerOne, Player playerTwo) {
     this.playerOne = playerOne;
     this.playerTwo = playerTwo;
+    status = GameStatus.ONGOING;
+    phase = GamePhase.START;
+    board = IntStream.of(new int[12]).map(i -> 6).toArray();
   }
 
   public UUID getId() {
@@ -95,16 +102,20 @@ public class Game {
     this.board = board;
   }
 
-  public boolean isPlayerOneTurn() {
-    return this.playerOneTurn;
+  public int getPlayerTurn() {
+    return this.playerTurn;
   }
 
-  public boolean getPlayerOneTurn() {
-    return this.playerOneTurn;
+  public void setPlayerTurn(int playerTurn) {
+    this.playerTurn = playerTurn;
   }
 
-  public void setPlayerOneTurn(boolean playerOneTurn) {
-    this.playerOneTurn = playerOneTurn;
+  public int getTotalTurn() {
+    return totalTurn;
+  }
+
+  public void setTotalTurn(int totalTurn) {
+    this.totalTurn = totalTurn;
   }
 
 }

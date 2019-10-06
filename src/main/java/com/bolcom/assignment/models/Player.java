@@ -22,11 +22,16 @@ public class Player {
   @NotBlank
   private int score;
 
+  @NotBlank
+  private int number;
+
   public Player() {
   }
 
-  public Player(String name) {
+  public Player(String name, int number) {
     this.name = name;
+    this.number = number;
+    score = 0;
   }
 
   public UUID getId() {
@@ -43,6 +48,22 @@ public class Player {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public int getScore() {
+    return this.score;
+  }
+
+  public void setScore(int score) {
+    this.score = score;
+  }
+
+  public int getNumber() {
+    return this.number;
+  }
+
+  public void setNumber(int number) {
+    this.number = number;
   }
 
 }
