@@ -6,6 +6,7 @@ import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
 import com.bolcom.assignment.system.exceptions.GameNotFoundException;
+import com.bolcom.assignment.system.exceptions.InvalidMoveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,33 @@ public class GameServiceImpl implements GameService {
     return PITS_PER_ROW + (playerNumber * PITS_PER_ROW);
   }
 
+  /**
+   * Return min index limit of player's board.
+   * 
+   * @param playerNumber
+   * @param index
+   * @return
+   */
+  private int getPlayerMinBoardLimit(int playerNumber) {
+    return 0 + (playerNumber * PITS_PER_ROW);
+  }
+
+  /**
+   * Validates whether the selected index is valid for current player.<br>
+   * - Index must be within range of the player's board.
+   * 
+   * @param playerNumber
+   * @param index
+   */
+  private void validatePick(int playerNumber, int index) {
+    int maxBoardLimit = getPlayerMaxBoardLimit(playerNumber);
+    int minBoardLimit = getPlayerMinBoardLimit(playerNumber);
+
+    if (minBoardLimit > index || index >= maxBoardLimit) {
+      throw new InvalidMoveException(String.format("Index %d is not a valid move.", index));
+    }
+  }
+
   @Override
   public void pick(UUID gameId, int playerNumber, int index) {
     Game game = getGame(gameId);
@@ -71,6 +99,7 @@ public class GameServiceImpl implements GameService {
 
     // Determine starting index based on player number
     int pitIndex = getPlayerBoardIndex(playerNumber, index);
+    validatePick(playerNumber, pitIndex);
 
     // Get all stones from the selected pit
     int hand = board[pitIndex];
@@ -79,18 +108,23 @@ public class GameServiceImpl implements GameService {
     // Get current player max board index
     int boardLimit = getPlayerMaxBoardLimit(playerNumber);
 
-    // Iterate and increment the pits by 1
-    for (int i = hand, j = pitIndex + 1; i > 0; i--, j++) {
-      board[j]++;
-
+    // Loop and increment the pits by 1
+    int i = pitIndex + 1;
+    while (hand > 0) {
+      if (i < boardLimit) {
+        board[i]++;
+        hand--;
+      }
       // If board limit is reached and there's still leftover hand,
       // increase score (large pit) and continue to opponent's board
-      if (j + 1 >= boardLimit) {
+      if (i + 1 >= boardLimit) {
         scoreToAdd++;
-        i--; // Place to large pit
+        hand--; // Place to large pit
         boardLimit = getPlayerMaxBoardLimit(opponentNumber);
-        j = getPlayerBoardIndex(opponentNumber, 0);
+        i = getPlayerBoardIndex(opponentNumber, 0) - 1;
       }
+      // Move to next pit
+      i++;
     }
 
     // Updates
