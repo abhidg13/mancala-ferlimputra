@@ -1,5 +1,6 @@
 package com.bolcom.assignment.services;
 
+import static com.bolcom.assignment.constants.GameConstants.*;
 import java.util.Optional;
 import java.util.UUID;
 import com.bolcom.assignment.models.Game;
@@ -10,13 +11,12 @@ import com.bolcom.assignment.system.exceptions.InvalidMoveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 /**
  * GameServiceImpl
  */
 @Service
 public class GameServiceImpl implements GameService {
-
-  public final static int PITS_PER_ROW = 6;
 
   @Autowired
   private PlayerService playerService;
@@ -115,7 +115,6 @@ public class GameServiceImpl implements GameService {
     Player player = playerService.getPlayerByGame(game, playerNumber);
     int[] board = game.getBoard();
     int scoreToAdd = 0;
-    int opponentNumber = playerNumber == 0 ? 1 : 0;
 
     // Get all stones from the selected pit
     int hand = board[pitIndex];
@@ -124,8 +123,12 @@ public class GameServiceImpl implements GameService {
     // Get current player max board index
     int boardLimit = getPlayerMaxBoardLimit(playerNumber);
 
-    // Loop and increment the pits by 1
     int i = pitIndex + 1;
+    int currentPlayerNumber = playerNumber;
+    int opponentNumber = playerNumber == PLAYER_ONE_NUM ? PLAYER_TWO_NUM : PLAYER_ONE_NUM;
+    boolean isPlayerBoard = true;
+
+    // Loop and increment the pits by 1
     while (hand > 0) {
       if (i < boardLimit) {
         board[i]++;
@@ -134,10 +137,14 @@ public class GameServiceImpl implements GameService {
       // If board limit is reached and there's still leftover hand,
       // increase score (large pit) and continue to opponent's board
       if (i + 1 >= boardLimit) {
-        scoreToAdd++;
-        hand--; // Place to large pit
-        boardLimit = getPlayerMaxBoardLimit(opponentNumber);
-        i = getPlayerBoardIndex(opponentNumber, 0) - 1;
+        if (isPlayerBoard) {
+          scoreToAdd++;
+          hand--; // Place to large pit
+        }
+        isPlayerBoard = !isPlayerBoard; // Switch board
+        currentPlayerNumber = isPlayerBoard ? playerNumber : opponentNumber;
+        boardLimit = getPlayerMaxBoardLimit(currentPlayerNumber);
+        i = getPlayerBoardIndex(currentPlayerNumber, 0) - 1;
       }
       // Move to next pit
       i++;

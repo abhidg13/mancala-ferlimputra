@@ -1,5 +1,6 @@
 package com.bolcom.assignment.models;
 
+import static com.bolcom.assignment.constants.GameConstants.*;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import javax.persistence.Entity;
@@ -51,7 +52,7 @@ public class Game {
     this.playerTwo = playerTwo;
     status = GameStatus.ONGOING;
     phase = GamePhase.START;
-    board = IntStream.of(new int[12]).map(i -> 6).toArray();
+    board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
   }
 
   public UUID getId() {
