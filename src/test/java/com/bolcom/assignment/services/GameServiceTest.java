@@ -140,11 +140,11 @@ public class GameServiceTest {
     Optional<Game> gameOptional = Optional.of(game);
     int playerNumber = PLAYER_ONE_NUM;
     int index = 0;
-    int[] expectedBoard = new int[] {1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
+    int[] expectedBoard = new int[] {1, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
     int expectedScore = 1;
 
     // Increases stones in picked pit
-    game.getBoard()[index] = 13;
+    game.getBoard()[index] = 14;
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
     when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerOne());
@@ -164,11 +164,63 @@ public class GameServiceTest {
     Optional<Game> gameOptional = Optional.of(game);
     int playerNumber = PLAYER_TWO_NUM;
     int index = 0;
-    int[] expectedBoard = new int[] {7, 7, 7, 7, 7, 7, 1, 7, 7, 7, 7, 7};
+    int[] expectedBoard = new int[] {7, 7, 7, 7, 7, 7, 1, 8, 7, 7, 7, 7};
     int expectedScore = 1;
 
     // Increases stones in picked pit
-    game.getBoard()[6] = 13;
+    game.getBoard()[6] = 14;
+
+    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
+    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
+
+    // Act
+    gameServiceImpl.pick(game.getId(), playerNumber, index);
+
+    // Assert
+    assertTrue(expectedScore == game.getPlayerTwo().getScore());
+    assertArrayEquals(expectedBoard, game.getBoard());
+  }
+
+  @Test
+  public void playerOnePlace_lastStonePlacedInEmptyPit_shouldCaptureOpponentPit() {
+    // Arrange
+    Game game = createGenericGame();
+
+    // Opponent: 1, 2, 3, 4, 5, 6
+    // Player: 3, 6, 6, 0, 6, 6
+    game.setBoard(new int[] {3, 6, 6, 0, 6, 6, 1, 2, 3, 4, 5, 6});
+
+    Optional<Game> gameOptional = Optional.of(game);
+    int playerNumber = PLAYER_ONE_NUM;
+    int index = 0;
+    int[] expectedBoard = new int[] {0, 7, 7, 0, 6, 6, 1, 2, 3, 0, 5, 6};
+    int expectedScore = 5; // 4 from capture + 1 from last stone
+
+    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
+    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerOne());
+
+    // Act
+    gameServiceImpl.pick(game.getId(), playerNumber, index);
+
+    // Assert
+    assertTrue(expectedScore == game.getPlayerOne().getScore());
+    assertArrayEquals(expectedBoard, game.getBoard());
+  }
+
+  @Test
+  public void playerTwoPlace_lastStonePlacedInEmptyPit_shouldCaptureOpponentPit() {
+    // Arrange
+    Game game = createGenericGame();
+
+    // Player: 3, 6, 6, 0, 6, 6
+    // Opponent: 1, 2, 3, 4, 5, 6
+    game.setBoard(new int[] {1, 2, 3, 4, 5, 6, 3, 6, 6, 0, 6, 6});
+
+    Optional<Game> gameOptional = Optional.of(game);
+    int playerNumber = PLAYER_TWO_NUM;
+    int index = 0;
+    int[] expectedBoard = new int[] {1, 2, 3, 0, 5, 6, 0, 7, 7, 0, 6, 6};
+    int expectedScore = 5; // 4 from capture + 1 from last stone
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
     when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
@@ -188,6 +240,23 @@ public class GameServiceTest {
     Optional<Game> gameOptional = Optional.of(game);
     int playerNumber = PLAYER_ONE_NUM;
     int index = 6;
+
+    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
+    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
+
+    // Act
+    gameServiceImpl.pick(game.getId(), playerNumber, index);
+  }
+
+  @Test(expected = InvalidMoveException.class)
+  public void playerPick_emptyPit_shouldThrowException() {
+    // Arrange
+    Game game = createGenericGame();
+    game.getBoard()[0] = 0;
+
+    Optional<Game> gameOptional = Optional.of(game);
+    int playerNumber = PLAYER_ONE_NUM;
+    int index = 0;
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
     when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
