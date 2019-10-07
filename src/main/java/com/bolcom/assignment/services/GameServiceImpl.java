@@ -92,14 +92,30 @@ public class GameServiceImpl implements GameService {
   @Override
   public void pick(UUID gameId, int playerNumber, int index) {
     Game game = getGame(gameId);
+
+    // Determine starting index based on player number
+    int pitIndex = getPlayerBoardIndex(playerNumber, index);
+
+    validatePick(playerNumber, pitIndex);
+    place(game, playerNumber, pitIndex);
+  }
+
+  /**
+   * Second phase of the game.<br>
+   * <br>
+   * Distribute the stone picked earlier to other pits one by one.<br>
+   * If finished iterating player's pit and there are still leftovers in hand,<br>
+   * start iterating into opponent's pits instead.
+   * 
+   * @param game
+   * @param playerNumber
+   * @param pitIndex
+   */
+  private void place(Game game, int playerNumber, int pitIndex) {
     Player player = playerService.getPlayerByGame(game, playerNumber);
     int[] board = game.getBoard();
     int scoreToAdd = 0;
     int opponentNumber = playerNumber == 0 ? 1 : 0;
-
-    // Determine starting index based on player number
-    int pitIndex = getPlayerBoardIndex(playerNumber, index);
-    validatePick(playerNumber, pitIndex);
 
     // Get all stones from the selected pit
     int hand = board[pitIndex];

@@ -8,9 +8,9 @@ import java.util.UUID;
 public interface GameService {
 
   /**
-   * Perform pick action by specific player:<br>
-   * 1. Player pick a pit from their board and take all stones.<br>
-   * 2. Iterate and distribute the stones to the next pits.
+   * First phase of the game<br>
+   * <br>
+   * Player pick a pit from their board and take all stones in that pit.
    * 
    * @param gameId
    * @param playerNumber
