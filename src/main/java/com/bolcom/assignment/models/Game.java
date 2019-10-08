@@ -8,8 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import com.bolcom.assignment.enums.GamePhase;
 import com.bolcom.assignment.enums.GameStatus;
+import org.springframework.lang.Nullable;
 
 /**
  * Game
@@ -30,9 +30,6 @@ public class Game {
   private Player playerTwo;
 
   @NotNull
-  private GamePhase phase;
-
-  @NotNull
   private GameStatus status;
 
   @NotNull
@@ -44,15 +41,18 @@ public class Game {
   @NotNull
   private int totalTurn;
 
+  @Nullable
+  private Player winner;
+
   public Game() {
   }
 
   public Game(Player playerOne, Player playerTwo) {
     this.playerOne = playerOne;
     this.playerTwo = playerTwo;
-    status = GameStatus.ONGOING;
-    phase = GamePhase.START;
+    status = GameStatus.IN_PROGRESS;
     board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
+    totalTurn = 0;
   }
 
   public UUID getId() {
@@ -77,14 +77,6 @@ public class Game {
 
   public void setPlayerTwo(Player playerTwo) {
     this.playerTwo = playerTwo;
-  }
-
-  public GamePhase getPhase() {
-    return this.phase;
-  }
-
-  public void setPhase(GamePhase phase) {
-    this.phase = phase;
   }
 
   public GameStatus getStatus() {
@@ -117,6 +109,18 @@ public class Game {
 
   public void setTotalTurn(int totalTurn) {
     this.totalTurn = totalTurn;
+  }
+
+  public void addTotalTurn(int totalTurn) {
+    this.totalTurn += totalTurn;
+  }
+
+  public Player getWinner() {
+    return this.winner;
+  }
+
+  public void setWinner(Player winner) {
+    this.winner = winner;
   }
 
 }

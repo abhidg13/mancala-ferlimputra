@@ -3,6 +3,8 @@ package com.bolcom.assignment.services;
 import static com.bolcom.assignment.constants.GameConstants.*;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.IntStream;
+import com.bolcom.assignment.enums.GameStatus;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
@@ -11,8 +13,9 @@ import com.bolcom.assignment.system.exceptions.InvalidMoveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 /**
+ * Service for Game related logics.
+ * 
  * GameServiceImpl
  */
 @Service
@@ -162,10 +165,78 @@ public class GameServiceImpl implements GameService {
       i++;
     }
 
+    // Calculate score for current turn
+    player.addScore(scoreToAdd);
+
+    // Increment turn and switch to next player's turn
+    game.addTotalTurn(1);
+    game.setPlayerTurn(opponentNumber);
+
+    // Check for finish condition
+    finish(game);
+
     // Updates
-    player.setScore(player.getScore() + scoreToAdd);
     playerService.savePlayer(player);
     gameRepository.save(game);
+  }
+
+  /**
+   * Checks whether there's any player's board that is empty.
+   * 
+   * @param playerNumber
+   * @param board
+   * @return
+   */
+  private boolean anyEmptyBoard(int[] board) {
+    boolean isPlayerOneEmpty = true;
+    boolean isPlayerTwoEmpty = true;
+
+    isPlayerOneEmpty = !IntStream
+        .range(getPlayerMinBoardLimit(PLAYER_ONE_NUM), getPlayerMaxBoardLimit(PLAYER_ONE_NUM))
+        .anyMatch(i -> board[i] != 0);
+    isPlayerTwoEmpty = !IntStream
+        .range(getPlayerMinBoardLimit(PLAYER_TWO_NUM), getPlayerMaxBoardLimit(PLAYER_TWO_NUM))
+        .anyMatch(i -> board[i] != 0);
+    return isPlayerOneEmpty || isPlayerTwoEmpty;
+  }
+
+  /**
+   * Collects all stones in all player's pit and place it into large pit.<br>
+   * Triggerred when finish condition is reached.
+   * 
+   * @param playerNumber
+   * @param board
+   * @return
+   */
+  private int collectStones(int playerNumber, int[] board) {
+    int scoreToAdd =
+        IntStream.range(getPlayerMinBoardLimit(playerNumber), getPlayerMaxBoardLimit(playerNumber))
+            .map(i -> board[i]).sum();
+    return scoreToAdd;
+  }
+
+  /**
+   * Checks and finishes the game.<br>
+   * Finish condition: any player's board is totally empty.
+   * 
+   * @param game
+   */
+  private void finish(Game game) {
+    int[] board = game.getBoard();
+
+    // Check both player's board if there's any empty row.
+    if (anyEmptyBoard(board)) {
+      Player playerOne = game.getPlayerOne();
+      Player playerTwo = game.getPlayerTwo();
+
+      // Calculate final score
+      playerOne.addScore(collectStones(playerOne.getNumber(), board));
+      playerTwo.addScore(collectStones(playerTwo.getNumber(), board));
+
+      // Determine winner and end the game
+      game.setWinner(playerOne.getScore() > playerTwo.getScore() ? playerOne : playerTwo);
+      game.setStatus(GameStatus.END);
+    }
   }
 
   /**

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
+import com.bolcom.assignment.enums.GameStatus;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
@@ -231,6 +232,34 @@ public class GameServiceTest {
     // Assert
     assertTrue(expectedScore == game.getPlayerTwo().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
+  }
+
+  @Test
+  public void playerOnePlace_allPitsEmpty_shouldFinishGame() {
+    // Arrange
+    Game game = createGenericGame();
+
+    // Player: 0, 0, 0, 0, 0, 1
+    // Opponent: 1, 2, 3, 4, 5, 6
+    game.setBoard(new int[] {0, 0, 0, 0, 0, 1, 1, 2, 3, 4, 5, 6});
+
+    Optional<Game> gameOptional = Optional.of(game);
+    Player playerOne = game.getPlayerOne();
+    Player playerTwo = game.getPlayerTwo();
+    int playerNumber = PLAYER_ONE_NUM;
+    int index = 5;
+    int expectedScore = 21;
+
+    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
+    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(playerOne);
+
+    // Act
+    gameServiceImpl.pick(game.getId(), playerNumber, index);
+
+    // Assert
+    assertTrue(game.getStatus().equals(GameStatus.END));
+    assertTrue(game.getWinner().equals(playerTwo));
+    assertTrue(playerTwo.getScore() == expectedScore);
   }
 
   @Test(expected = InvalidMoveException.class)

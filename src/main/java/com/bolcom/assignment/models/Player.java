@@ -58,6 +58,10 @@ public class Player {
     this.score = score;
   }
 
+  public void addScore(int score) {
+    this.score += score;
+  }
+
   public int getNumber() {
     return this.number;
   }
