@@ -1,10 +1,13 @@
 package com.bolcom.assignment.beans;
 
+import java.util.UUID;
+
 /**
  * PlayerBeans
  */
 public class PlayerBeans {
 
+  private UUID id;
   private String name;
   private int score;
   private int number;
@@ -13,6 +16,14 @@ public class PlayerBeans {
     this.name = name;
     this.score = score;
     this.number = number;
+  }
+
+  public UUID getId() {
+    return this.id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
   }
 
   public int getNumber() {
@@ -38,4 +49,5 @@ public class PlayerBeans {
   public void setScore(int score) {
     this.score = score;
   }
+
 }

@@ -4,6 +4,7 @@ import static com.bolcom.assignment.constants.GameConstants.*;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import com.bolcom.assignment.beans.GameBeans;
 import com.bolcom.assignment.enums.GameStatus;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
@@ -260,4 +261,17 @@ public class GameServiceImpl implements GameService {
     board[oppositePitIndex] = 0;
     return scoreToAdd;
   }
+
+  @Override
+  public GameBeans getGameBeansById(UUID gameId) {
+    Game game = getGame(gameId);
+    return null;
+  }
+
+  @Override
+  public GameBeans start(GameBeans gameBeans) {
+    //Game game = new Game(playerOne, playerTwo);
+    return null;
+  }
+
 }

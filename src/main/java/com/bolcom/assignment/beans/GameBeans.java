@@ -13,6 +13,9 @@ public class GameBeans {
   private int[] boards;
   private int playerTurn;
   private int totalTurn;
+  private int index;
+  private PlayerBeans playerOne;
+  private PlayerBeans playerTwo;
 
   public GameBeans(UUID id, GameStatus status, int[] boards, int playerTurn, int totalTurn) {
     this.id = id;
@@ -60,6 +63,30 @@ public class GameBeans {
 
   public void setBoards(int[] boards) {
     this.boards = boards;
+  }
+
+  public int getIndex() {
+    return this.index;
+  }
+
+  public void setIndex(int index) {
+    this.index = index;
+  }
+
+  public PlayerBeans getPlayerOne() {
+    return this.playerOne;
+  }
+
+  public void setPlayerOne(PlayerBeans playerOne) {
+    this.playerOne = playerOne;
+  }
+
+  public PlayerBeans getPlayerTwo() {
+    return this.playerTwo;
+  }
+
+  public void setPlayerTwo(PlayerBeans playerTwo) {
+    this.playerTwo = playerTwo;
   }
 
 }

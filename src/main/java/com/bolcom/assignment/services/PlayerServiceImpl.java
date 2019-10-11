@@ -1,5 +1,7 @@
 package com.bolcom.assignment.services;
 
+import com.bolcom.assignment.beans.PlayerBeans;
+import com.bolcom.assignment.constants.GameConstants;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.PlayerRepository;
@@ -17,7 +19,7 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   public Player getPlayerByGame(Game game, int playerNumber) {
-    if (playerNumber == 0) {
+    if (playerNumber == GameConstants.PLAYER_ONE_NUM) {
       return game.getPlayerOne();
     } else {
       return game.getPlayerTwo();
@@ -27,6 +29,12 @@ public class PlayerServiceImpl implements PlayerService {
   @Override
   public Player savePlayer(Player player) {
     return playerRepository.save(player);
+  }
+
+  @Override
+  public Player createNewPlayer(PlayerBeans playerBeans) {
+    // return savePlayer(player);
+    return null;
   }
 
 }
