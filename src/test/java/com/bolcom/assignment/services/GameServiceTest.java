@@ -11,15 +11,18 @@ import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
 import com.bolcom.assignment.system.exceptions.InvalidMoveException;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * GameServiceTest
  */
+@RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
 public class GameServiceTest {
 
   @InjectMocks
@@ -30,11 +33,6 @@ public class GameServiceTest {
 
   @Mock
   private GameRepository gameRepository;
-
-  @Before
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
-  }
 
   /**
    * Helper method to generate Game with generic Players.

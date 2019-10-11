@@ -5,6 +5,7 @@ import com.bolcom.assignment.constants.GameConstants;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.PlayerRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Autowired
   private PlayerRepository playerRepository;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   @Override
   public Player getPlayerByGame(Game game, int playerNumber) {
@@ -33,8 +37,7 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   public Player createNewPlayer(PlayerBeans playerBeans) {
-    // return savePlayer(player);
-    return null;
+    return modelMapper.map(playerBeans, Player.class);
   }
 
 }

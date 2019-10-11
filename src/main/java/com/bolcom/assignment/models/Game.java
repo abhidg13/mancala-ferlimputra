@@ -42,6 +42,7 @@ public class Game {
   private int totalTurn;
 
   @Nullable
+  @ManyToOne
   private Player winner;
 
   public Game() {

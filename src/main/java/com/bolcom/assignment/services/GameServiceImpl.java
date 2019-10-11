@@ -11,6 +11,7 @@ import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
 import com.bolcom.assignment.system.exceptions.GameNotFoundException;
 import com.bolcom.assignment.system.exceptions.InvalidMoveException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class GameServiceImpl implements GameService {
 
   @Autowired
   private GameRepository gameRepository;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   /**
    * Get Game by id.
@@ -264,13 +268,11 @@ public class GameServiceImpl implements GameService {
 
   @Override
   public GameBeans getGameBeansById(UUID gameId) {
-    Game game = getGame(gameId);
-    return null;
+    return modelMapper.map(getGame(gameId), GameBeans.class);
   }
 
   @Override
   public GameBeans start(GameBeans gameBeans) {
-    //Game game = new Game(playerOne, playerTwo);
     return null;
   }
 
