@@ -12,6 +12,10 @@ public class PlayerBeans {
   private int score;
   private int number;
 
+  public PlayerBeans() {
+    super();
+  }
+
   public PlayerBeans(String name, int score, int number) {
     this.name = name;
     this.score = score;

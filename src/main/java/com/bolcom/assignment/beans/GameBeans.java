@@ -17,6 +17,10 @@ public class GameBeans {
   private PlayerBeans playerOne;
   private PlayerBeans playerTwo;
 
+  public GameBeans() {
+    super();
+  }
+
   public GameBeans(UUID id, GameStatus status, int[] boards, int playerTurn, int totalTurn) {
     this.id = id;
     this.status = status;

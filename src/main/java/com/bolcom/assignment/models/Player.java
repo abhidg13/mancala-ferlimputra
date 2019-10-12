@@ -26,9 +26,11 @@ public class Player {
   private int number;
 
   public Player() {
+    super();
   }
 
   public Player(String name, int number) {
+    this();
     this.name = name;
     this.number = number;
     score = 0;

@@ -2,10 +2,15 @@ package com.bolcom.assignment.services;
 
 import static com.bolcom.assignment.constants.GameConstants.*;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
+import com.bolcom.assignment.beans.GameBeans;
+import com.bolcom.assignment.beans.PlayerBeans;
 import com.bolcom.assignment.enums.GameStatus;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
@@ -13,9 +18,13 @@ import com.bolcom.assignment.repositories.GameRepository;
 import com.bolcom.assignment.system.exceptions.InvalidMoveException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -33,6 +42,9 @@ public class GameServiceTest {
 
   @Mock
   private GameRepository gameRepository;
+
+  @Spy
+  private ModelMapper modelMapper;
 
   /**
    * Helper method to generate Game with generic Players.
@@ -258,6 +270,26 @@ public class GameServiceTest {
     assertTrue(game.getStatus().equals(GameStatus.END));
     assertTrue(game.getWinner().equals(playerTwo));
     assertTrue(playerTwo.getScore() == expectedScore);
+  }
+
+  @Test
+  public void startNewGame_shouldSaveGameAndReturnBean() {
+    // Arrange
+    GameBeans gameBeans = new GameBeans();
+    gameBeans.setPlayerOne(new PlayerBeans("A", 50, PLAYER_ONE_NUM));
+    gameBeans.setPlayerTwo(new PlayerBeans("B", 100, PLAYER_TWO_NUM));
+    ArgumentCaptor<Game> captor = ArgumentCaptor.forClass(Game.class);
+
+    when(gameRepository.save(ArgumentMatchers.any(Game.class))).thenReturn(new Game());
+
+    // Act
+    gameServiceImpl.start(gameBeans);
+
+    // Assert
+    verify(gameRepository).save(captor.capture());
+    assertNotNull(captor.getValue().getBoard());
+    assertEquals(captor.getValue().getPlayerOne().getName(), gameBeans.getPlayerOne().getName());
+    assertEquals(captor.getValue().getPlayerTwo().getName(), gameBeans.getPlayerTwo().getName());
   }
 
   @Test(expected = InvalidMoveException.class)

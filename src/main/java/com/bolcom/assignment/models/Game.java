@@ -46,14 +46,16 @@ public class Game {
   private Player winner;
 
   public Game() {
-  }
-
-  public Game(Player playerOne, Player playerTwo) {
-    this.playerOne = playerOne;
-    this.playerTwo = playerTwo;
+    super();
     status = GameStatus.IN_PROGRESS;
     board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
     totalTurn = 0;
+  }
+
+  public Game(Player playerOne, Player playerTwo) {
+    this();
+    this.playerOne = playerOne;
+    this.playerTwo = playerTwo;
   }
 
   public UUID getId() {

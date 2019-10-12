@@ -272,8 +272,15 @@ public class GameServiceImpl implements GameService {
   }
 
   @Override
+  public Game saveGame(Game game) {
+    return gameRepository.save(game);
+  }
+
+  @Override
   public GameBeans start(GameBeans gameBeans) {
-    return null;
+    Game game = modelMapper.map(gameBeans, Game.class);
+    game = saveGame(game);
+    return modelMapper.map(game, GameBeans.class);
   }
 
 }
