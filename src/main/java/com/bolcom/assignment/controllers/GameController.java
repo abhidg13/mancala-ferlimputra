@@ -23,7 +23,7 @@ public class GameController {
 
   @PostMapping("/start")
   public GameBeans start(@RequestBody GameBeans gameBeans) {
-    return null;
+    return gameService.start(gameBeans);
   }
 
   @PostMapping("/pick")
