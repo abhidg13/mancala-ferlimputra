@@ -10,6 +10,7 @@ import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
 import com.bolcom.assignment.system.exceptions.GameNotFoundException;
+import com.bolcom.assignment.system.exceptions.InvalidGameStateException;
 import com.bolcom.assignment.system.exceptions.InvalidMoveException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -277,10 +278,21 @@ public class GameServiceImpl implements GameService {
   }
 
   @Override
-  public GameBeans start(GameBeans gameBeans) {
-    Game game = modelMapper.map(gameBeans, Game.class);
-    game = saveGame(game);
+  public GameBeans start(String playerOneName, String playerTwoName) {
+    Player playerOne = playerService.createNewPlayer(playerOneName, PLAYER_ONE_NUM);
+    Player playerTwo = playerService.createNewPlayer(playerTwoName, PLAYER_TWO_NUM);
+    Game game = saveGame(new Game(playerOne, playerTwo));
     return modelMapper.map(game, GameBeans.class);
+  }
+
+  @Override
+  public String load(UUID gameId) {
+    GameBeans gameBeans = getGameBeansById(gameId);
+    if (gameBeans.getStatus().equals(GameStatus.END)) {
+      throw new InvalidGameStateException(
+          String.format("Game (%s) has ended. Please start a new game.", gameId));
+    }
+    return gameBeans.getId().toString();
   }
 
 }

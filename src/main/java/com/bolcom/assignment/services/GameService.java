@@ -29,12 +29,21 @@ public interface GameService {
   public GameBeans getGameBeansById(UUID gameId);
 
   /**
-   * Start a new game.
+   * Starts a new game.
    * 
    * @param gameBeans
    * @return
    */
-  public GameBeans start(GameBeans gameBeans);
+  public GameBeans start(String playerOneName, String playerTwoname);
+
+  /**
+   * Loads existing game.<br>
+   * Returns loaded game's id.
+   * 
+   * @param gameBeans
+   * @return
+   */
+  public String load(UUID gameId);
 
   /**
    * Saves or updates a Game.

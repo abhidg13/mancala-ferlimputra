@@ -9,8 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
-import com.bolcom.assignment.beans.GameBeans;
-import com.bolcom.assignment.beans.PlayerBeans;
 import com.bolcom.assignment.enums.GameStatus;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
@@ -275,21 +273,23 @@ public class GameServiceTest {
   @Test
   public void startNewGame_shouldSaveGameAndReturnBean() {
     // Arrange
-    GameBeans gameBeans = new GameBeans();
-    gameBeans.setPlayerOne(new PlayerBeans("A", 50, PLAYER_ONE_NUM));
-    gameBeans.setPlayerTwo(new PlayerBeans("B", 100, PLAYER_TWO_NUM));
+    String playerOneName = "A";
+    String playerTwoName = "B";
     ArgumentCaptor<Game> captor = ArgumentCaptor.forClass(Game.class);
 
     when(gameRepository.save(ArgumentMatchers.any(Game.class))).thenReturn(new Game());
+    when(playerService.createNewPlayer(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt()))
+        .thenReturn(new Player());
 
     // Act
-    gameServiceImpl.start(gameBeans);
+    gameServiceImpl.start(playerOneName, playerTwoName);
 
     // Assert
     verify(gameRepository).save(captor.capture());
     assertNotNull(captor.getValue().getBoard());
-    assertEquals(captor.getValue().getPlayerOne().getName(), gameBeans.getPlayerOne().getName());
-    assertEquals(captor.getValue().getPlayerTwo().getName(), gameBeans.getPlayerTwo().getName());
+    assertNotNull(captor.getValue().getPlayerOne());
+    assertNotNull(captor.getValue().getPlayerTwo());
+    assertEquals(GameStatus.IN_PROGRESS, captor.getValue().getStatus());
   }
 
   @Test(expected = InvalidMoveException.class)

@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * Player
@@ -19,10 +20,10 @@ public class Player {
   @NotBlank
   private String name;
 
-  @NotBlank
+  @NotNull
   private int score;
 
-  @NotBlank
+  @NotNull
   private int number;
 
   public Player() {

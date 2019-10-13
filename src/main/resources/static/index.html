@@ -6,45 +6,16 @@
     <title>Mancala</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
   </head>
   <body>
     <header>
       <h1>Mancala</h1>
     </header>
     <main>
-      <div class="board-container">
-        <table class="board">
-          <tbody>
-            <tr class="player-row" id="player2-row">
-              <td colspan="8"><h3>Player 2</h3></td>
-            </tr>
-            <tr class="board-row">
-              <td class="large-pit" id="large-pit1" rowspan="3">0</td>
-              <td class="pit" id="pit11">0</td>
-              <td class="pit" id="pit10">0</td>
-              <td class="pit" id="pit9">0</td>
-              <td class="pit" id="pit8">0</td>
-              <td class="pit" id="pit7">0</td>
-              <td class="pit" id="pit6">0</td>
-              <td class="large-pit" id="large-pit0" rowspan="3">0</td>
-            </tr>
-            <tr class="blank-row">
-              <td colspan="6"><hr /></td>
-            </tr>
-            <tr class="board-row">
-              <td class="pit" id="pit0">0</td>
-              <td class="pit" id="pit1">0</td>
-              <td class="pit" id="pit2">0</td>
-              <td class="pit" id="pit3">0</td>
-              <td class="pit" id="pit4">0</td>
-              <td class="pit" id="pit5">0</td>
-            </tr>
-            <tr class="player-row" id="player1-row">
-              <td colspan="8"><h3>Player 1</h3></td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="menu">
+        <button class="menu-item" id="new-game-button">New Game</button>
+        <button class="menu-item" id="load-game-button">Load Game</button>
       </div>
     </main>
   </body>

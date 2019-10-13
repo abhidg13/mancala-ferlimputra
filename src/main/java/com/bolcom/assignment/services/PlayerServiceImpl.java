@@ -36,7 +36,13 @@ public class PlayerServiceImpl implements PlayerService {
   }
 
   @Override
-  public Player createNewPlayer(PlayerBeans playerBeans) {
+  public Player createNewPlayer(String playerName, int playerNumber) {
+    Player player = new Player(playerName, playerNumber);
+    return savePlayer(player);
+  }
+
+  @Override
+  public Player convertPlayerBeansToPlayer(PlayerBeans playerBeans) {
     return modelMapper.map(playerBeans, Player.class);
   }
 

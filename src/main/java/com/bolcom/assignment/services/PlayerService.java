@@ -19,12 +19,20 @@ public interface PlayerService {
   public Player getPlayerByGame(Game game, int playerNumber);
 
   /**
-   * Create and save a new player from player bean.
+   * Create and save a new player.
    * 
    * @param playerBeans
    * @return
    */
-  public Player createNewPlayer(PlayerBeans playerBeans);
+  public Player createNewPlayer(String playerName, int playerNumber);
+
+  /**
+   * Convert Player Bean to Player object.
+   * 
+   * @param playerBeans
+   * @return
+   */
+  public Player convertPlayerBeansToPlayer(PlayerBeans playerBeans);
 
   /**
    * Saves or updates player.
