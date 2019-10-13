@@ -39,6 +39,8 @@ const loadGame = async () => {
     const data = await response.json();
 
     if (response.ok) {
+      const gameUrl = `${BASE_URL}/play/${gameId}`;
+      window.location.href = gameUrl;
     } else {
       alert(data.message);
     }

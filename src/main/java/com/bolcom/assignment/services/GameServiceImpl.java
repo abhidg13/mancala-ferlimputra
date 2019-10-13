@@ -148,6 +148,7 @@ public class GameServiceImpl implements GameService {
     int currentPlayerNumber = playerNumber;
     int opponentNumber = playerNumber == PLAYER_ONE_NUM ? PLAYER_TWO_NUM : PLAYER_ONE_NUM;
     boolean isPlayerBoard = true;
+    boolean isFinalOnLargePit = false;
 
     while (hand > 0) {
       // If current index is not a large pit
@@ -168,6 +169,10 @@ public class GameServiceImpl implements GameService {
           // Place to large pit
           scoreToAdd++;
           hand--;
+
+          if (hand == 0) {
+            isFinalOnLargePit = true;
+          }
         }
         // Switch board
         isPlayerBoard = !isPlayerBoard;
@@ -184,7 +189,11 @@ public class GameServiceImpl implements GameService {
 
     // Increment turn and switch to next player's turn
     game.addTotalTurn(1);
-    game.setPlayerTurn(opponentNumber);
+
+    // If last stone landed on large pit, current player will get another turn
+    if (!isFinalOnLargePit) {
+      game.setPlayerTurn(opponentNumber);
+    }
 
     // Check for finish condition
     finish(game);
