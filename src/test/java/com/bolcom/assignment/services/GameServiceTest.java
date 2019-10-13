@@ -13,6 +13,7 @@ import com.bolcom.assignment.enums.GameStatus;
 import com.bolcom.assignment.models.Game;
 import com.bolcom.assignment.models.Player;
 import com.bolcom.assignment.repositories.GameRepository;
+import com.bolcom.assignment.system.exceptions.GameNotFoundException;
 import com.bolcom.assignment.system.exceptions.InvalidMoveException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -310,7 +311,6 @@ public class GameServiceTest {
     int index = 6;
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
 
     // Act
     gameServiceImpl.pick(game.getId(), playerNumber, index);
@@ -327,10 +327,18 @@ public class GameServiceTest {
     int index = 0;
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
 
     // Act
     gameServiceImpl.pick(game.getId(), playerNumber, index);
+  }
+
+  @Test(expected = GameNotFoundException.class)
+  public void loadGame_invalidGameId_shouldThrowException() {
+    // Arrange
+    UUID gameId = UUID.randomUUID();
+
+    // Act
+    gameServiceImpl.load(gameId);
   }
 
 }
