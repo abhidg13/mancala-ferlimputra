@@ -7,20 +7,19 @@ import com.bolcom.assignment.beans.GameBeans;
 import com.bolcom.assignment.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  * GameController
  */
-@Controller
+@RestController
 @RequestMapping("game")
 public class GameController {
 
@@ -35,20 +34,19 @@ public class GameController {
   }
 
   @PostMapping("/start/{playerOneName}/{playerTwoName}")
-  public @ResponseBody Map<String, String> start(
-      @PathVariable("playerOneName") String playerOneName,
+  public Map<String, String> start(@PathVariable("playerOneName") String playerOneName,
       @PathVariable("playerTwoName") String playerTwoName) {
     String gameId = gameService.start(playerOneName, playerTwoName).getId().toString();
     return Collections.singletonMap("gameId", gameId);
   }
 
   @PostMapping("/pick")
-  public void pick(@RequestBody GameBeans gameBeans) {
-    gameService.pick(gameBeans.getId(), gameBeans.getPlayerTurn(), gameBeans.getIndex());
+  public GameBeans pick(@RequestBody GameBeans gameBeans) {
+    return gameService.pick(gameBeans.getId(), gameBeans.getPlayerTurn(), gameBeans.getIndex());
   }
 
   @GetMapping("/load/{gameId}")
-  public @ResponseBody Map<String, String> loadGame(@PathVariable("gameId") String gameId) {
+  public Map<String, String> loadGame(@PathVariable("gameId") String gameId) {
     try {
       String loadedGameId = gameService.load(UUID.fromString(gameId));
       return Collections.singletonMap("gameId", loadedGameId);
@@ -58,7 +56,7 @@ public class GameController {
   }
 
   @GetMapping("/{gameId}")
-  public @ResponseBody GameBeans getGame(@PathVariable("gameId") String gameId) {
+  public GameBeans getGame(@PathVariable("gameId") String gameId) {
     try {
       return gameService.getGameBeansById(UUID.fromString(gameId));
     } catch (IllegalArgumentException ex) {

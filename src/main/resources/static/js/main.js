@@ -45,6 +45,5 @@ const loadGame = async () => {
   }
 };
 
-window.onload = load;
 document.getElementById("new-game-button").addEventListener("click", newGame);
 document.getElementById("load-game-button").addEventListener("click", loadGame);

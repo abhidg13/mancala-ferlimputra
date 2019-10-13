@@ -18,7 +18,7 @@ public interface GameService {
    * @param playerNumber
    * @param index
    */
-  public void pick(UUID gameId, int playerNumber, int index);
+  public GameBeans pick(UUID gameId, int playerNumber, int index);
 
   /**
    * Get an existing game by id and convert it to bean.

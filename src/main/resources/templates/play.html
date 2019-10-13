@@ -11,7 +11,9 @@
       media="screen"
       href="/css/main.css"
     />
-    <script th:inline="javascript"></script>
+    <script data-th-inline="javascript">
+      const gameId = [[${gameId}]];
+    </script>
     <script type="module" src="/js/game.js"></script>
   </head>
   <body>
@@ -41,27 +43,27 @@
         <table class="board">
           <tbody>
             <tr class="player-row" id="player2-row">
-              <td colspan="8"><h3>Player 2</h3></td>
+              <td colspan="8"><h3 id="player2-name">Player 2</h3></td>
             </tr>
             <tr class="board-row">
               <td class="large-pit" id="large-pit1" rowspan="3">0</td>
               <td>
-                <button class="pit" id="pit11" onclick="pick(this)">0</button>
+                <button class="pit" id="pit11">0</button>
               </td>
               <td>
-                <button class="pit" id="pit10" onclick="pick(this)">0</button>
+                <button class="pit" id="pit10">0</button>
               </td>
               <td>
-                <button class="pit" id="pit9" onclick="pick(this)">0</button>
+                <button class="pit" id="pit9">0</button>
               </td>
               <td>
-                <button class="pit" id="pit8" onclick="pick(this)">0</button>
+                <button class="pit" id="pit8">0</button>
               </td>
               <td>
-                <button class="pit" id="pit7" onclick="pick(this)">0</button>
+                <button class="pit" id="pit7">0</button>
               </td>
               <td>
-                <button class="pit" id="pit6" onclick="pick(this)">0</button>
+                <button class="pit" id="pit6">0</button>
               </td>
               <td class="large-pit" id="large-pit0" rowspan="3">0</td>
             </tr>
@@ -70,26 +72,26 @@
             </tr>
             <tr class="board-row">
               <td>
-                <button class="pit" id="pit0" onclick="pick(this)">0</button>
+                <button class="pit" id="pit0">0</button>
               </td>
               <td>
-                <button class="pit" id="pit1" onclick="pick(this)">0</button>
+                <button class="pit" id="pit1">0</button>
               </td>
               <td>
-                <button class="pit" id="pit2" onclick="pick(this)">0</button>
+                <button class="pit" id="pit2">0</button>
               </td>
               <td>
-                <button class="pit" id="pit3" onclick="pick(this)">0</button>
+                <button class="pit" id="pit3">0</button>
               </td>
               <td>
-                <button class="pit" id="pit4" onclick="pick(this)">0</button>
+                <button class="pit" id="pit4">0</button>
               </td>
               <td>
-                <button class="pit" id="pit5" onclick="pick(this)">0</button>
+                <button class="pit" id="pit5">0</button>
               </td>
             </tr>
             <tr class="player-row" id="player1-row">
-              <td colspan="8"><h3>Player 1</h3></td>
+              <td colspan="8"><h3 id="player1-name">Player 1</h3></td>
             </tr>
           </tbody>
         </table>

@@ -10,7 +10,7 @@ public class GameBeans {
 
   private UUID id;
   private GameStatus status;
-  private int[] boards;
+  private int[] board;
   private int playerTurn;
   private int totalTurn;
   private int index;
@@ -21,10 +21,10 @@ public class GameBeans {
     super();
   }
 
-  public GameBeans(UUID id, GameStatus status, int[] boards, int playerTurn, int totalTurn) {
+  public GameBeans(UUID id, GameStatus status, int[] board, int playerTurn, int totalTurn) {
     this.id = id;
     this.status = status;
-    this.boards = boards;
+    this.board = board;
     this.playerTurn = playerTurn;
     this.totalTurn = totalTurn;
   }
@@ -61,12 +61,12 @@ public class GameBeans {
     this.status = status;
   }
 
-  public int[] getBoards() {
-    return this.boards;
+  public int[] getBoard() {
+    return this.board;
   }
 
-  public void setBoards(int[] boards) {
-    this.boards = boards;
+  public void setBoard(int[] board) {
+    this.board = board;
   }
 
   public int getIndex() {

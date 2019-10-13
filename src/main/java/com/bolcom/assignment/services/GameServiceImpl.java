@@ -64,6 +64,16 @@ public class GameServiceImpl implements GameService {
   }
 
   /**
+   * Gets opponent's pit index which directly opposite of current index.
+   * 
+   * @param index
+   * @return
+   */
+  private int getOppositePitIndex(int index) {
+    return TOTAL_PITS - index - 1;
+  }
+
+  /**
    * Return max index limit of player's board.
    * 
    * @param playerNumber
@@ -71,7 +81,7 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int getPlayerMaxBoardLimit(int playerNumber) {
-    return PITS_PER_ROW + (playerNumber * PITS_PER_ROW);
+    return PITS_PER_ROW + (playerNumber * PITS_PER_ROW) - 1;
   }
 
   /**
@@ -88,7 +98,7 @@ public class GameServiceImpl implements GameService {
   /**
    * Validates whether the selected index is valid for current player.<br>
    * 1. Index must be within range of the player's board.<br>
-   * 2. Selected pit must not be empty.
+   * 2. Selected pit must not be empty.<br>
    * 
    * @param playerNumber
    * @param index
@@ -97,20 +107,18 @@ public class GameServiceImpl implements GameService {
     int maxBoardLimit = getPlayerMaxBoardLimit(playerNumber);
     int minBoardLimit = getPlayerMinBoardLimit(playerNumber);
 
-    if (minBoardLimit > index || index >= maxBoardLimit || board[index] == 0) {
+    if (minBoardLimit > index || index > maxBoardLimit || board[index] == 0) {
       throw new InvalidMoveException(String.format("Index %d is not a valid move.", index));
     }
   }
 
   @Override
-  public void pick(UUID gameId, int playerNumber, int index) {
+  public GameBeans pick(UUID gameId, int playerNumber, int index) {
     Game game = getGame(gameId);
-
-    // Determine starting index based on player number
-    int pitIndex = getPlayerBoardIndex(playerNumber, index, false);
-
-    validatePick(playerNumber, pitIndex, game.getBoard());
-    place(game, playerNumber, pitIndex);
+    validateGameStatus(game.getId(), game.getStatus());
+    validatePick(playerNumber, index, game.getBoard());
+    game = place(game, playerNumber, index);
+    return modelMapper.map(game, GameBeans.class);
   }
 
   /**
@@ -124,7 +132,7 @@ public class GameServiceImpl implements GameService {
    * @param playerNumber
    * @param pitIndex
    */
-  private void place(Game game, int playerNumber, int pitIndex) {
+  private Game place(Game game, int playerNumber, int pitIndex) {
     Player player = playerService.getPlayerByGame(game, playerNumber);
     int[] board = game.getBoard();
     int scoreToAdd = 0;
@@ -143,7 +151,7 @@ public class GameServiceImpl implements GameService {
 
     while (hand > 0) {
       // If current index is not a large pit
-      if (i < boardLimit) {
+      if (i <= boardLimit) {
         // Check for Capture condition
         if (isPlayerBoard && hand == 1 && board[i] == 0) {
           scoreToAdd += capture(i, opponentNumber, board);
@@ -155,7 +163,7 @@ public class GameServiceImpl implements GameService {
       }
       // If board limit is reached and there's still leftover hand,
       // increase score (large pit) and continue to opponent's board
-      if (i + 1 >= boardLimit) {
+      if (i > boardLimit) {
         if (isPlayerBoard) {
           // Place to large pit
           scoreToAdd++;
@@ -183,7 +191,7 @@ public class GameServiceImpl implements GameService {
 
     // Updates
     playerService.savePlayer(player);
-    gameRepository.save(game);
+    return gameRepository.save(game);
   }
 
   /**
@@ -215,9 +223,9 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int collectStones(int playerNumber, int[] board) {
-    int scoreToAdd =
-        IntStream.range(getPlayerMinBoardLimit(playerNumber), getPlayerMaxBoardLimit(playerNumber))
-            .map(i -> board[i]).sum();
+    int scoreToAdd = IntStream
+        .rangeClosed(getPlayerMinBoardLimit(playerNumber), getPlayerMaxBoardLimit(playerNumber))
+        .map(i -> board[i]).sum();
     return scoreToAdd;
   }
 
@@ -256,7 +264,7 @@ public class GameServiceImpl implements GameService {
    */
   private int capture(int index, int opponentNumber, int[] board) {
     // Get opponent's pit index
-    int oppositePitIndex = getPlayerBoardIndex(opponentNumber, index, true);
+    int oppositePitIndex = getOppositePitIndex(index);
 
     // Put all stones in current pit and opposite pit to large pit
     int scoreToAdd = board[oppositePitIndex] + 1;
@@ -265,6 +273,20 @@ public class GameServiceImpl implements GameService {
     board[index] = 0;
     board[oppositePitIndex] = 0;
     return scoreToAdd;
+  }
+
+  /**
+   * Validate Game Status.<br>
+   * Prevent ended game to be loaded or played.
+   * 
+   * @param gameId
+   * @param gameStatus
+   */
+  private void validateGameStatus(UUID gameId, GameStatus gameStatus) {
+    if (gameStatus.equals(GameStatus.END)) {
+      throw new InvalidGameStateException(
+          String.format("Game (%s) has ended. Please start a new game.", gameId));
+    }
   }
 
   @Override
@@ -288,10 +310,7 @@ public class GameServiceImpl implements GameService {
   @Override
   public String load(UUID gameId) {
     GameBeans gameBeans = getGameBeansById(gameId);
-    if (gameBeans.getStatus().equals(GameStatus.END)) {
-      throw new InvalidGameStateException(
-          String.format("Game (%s) has ended. Please start a new game.", gameId));
-    }
+    validateGameStatus(gameBeans.getId(), gameBeans.getStatus());
     return gameBeans.getId().toString();
   }
 
