@@ -117,6 +117,8 @@ public class GameServiceImpl implements GameService {
     Game game = getGame(gameId);
     validateGameStatus(game.getId(), game.getStatus());
     validatePick(playerNumber, index, game.getBoard());
+
+    // Proceed to place the stones
     game = place(game, playerNumber, index);
     return modelMapper.map(game, GameBeans.class);
   }
