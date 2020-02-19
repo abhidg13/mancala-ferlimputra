@@ -23,7 +23,7 @@ header {
 
 .board {
   border: 5px solid black;
-  border-radius: 20%;
+  border-radius: 15%;
   background: rgb(139, 72, 9);
   min-width: 400px;
   margin: auto;
@@ -42,6 +42,7 @@ header {
   background: rgb(231, 157, 87);
   border: 1px solid black;
   border-radius: 50%;
+  font-size: 22px;
 }
 
 .pit {
@@ -52,6 +53,7 @@ header {
   background: rgb(231, 157, 87);
   border: 1px solid black;
   border-radius: 50%;
+  font-size: 22px;
 }
 
 .pit:hover {
@@ -64,4 +66,14 @@ header {
 
 #player2-row td {
   border-bottom: 2px solid black;
+}
+
+.blink {
+  animation: blinker 1s step-start infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
 }

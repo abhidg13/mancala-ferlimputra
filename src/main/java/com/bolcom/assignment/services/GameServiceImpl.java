@@ -77,7 +77,6 @@ public class GameServiceImpl implements GameService {
    * Return max index limit of player's board.
    * 
    * @param playerNumber
-   * @param index
    * @return
    */
   private int getPlayerMaxBoardLimit(int playerNumber) {
@@ -88,7 +87,6 @@ public class GameServiceImpl implements GameService {
    * Return min index limit of player's board.
    * 
    * @param playerNumber
-   * @param index
    * @return
    */
   private int getPlayerMinBoardLimit(int playerNumber) {
@@ -207,8 +205,7 @@ public class GameServiceImpl implements GameService {
 
   /**
    * Checks whether there's any player's board that is empty.
-   * 
-   * @param playerNumber
+   *
    * @param board
    * @return
    */
@@ -222,6 +219,8 @@ public class GameServiceImpl implements GameService {
     isPlayerTwoEmpty = !IntStream
         .range(getPlayerMinBoardLimit(PLAYER_TWO_NUM), getPlayerMaxBoardLimit(PLAYER_TWO_NUM))
         .anyMatch(i -> board[i] != 0);
+    System.out.println(">>> isPlayerOneEmpty: " + isPlayerOneEmpty);
+    System.out.println(">>> isPlayerTwoEmpty: " + isPlayerTwoEmpty);
     return isPlayerOneEmpty || isPlayerTwoEmpty;
   }
 
@@ -260,6 +259,7 @@ public class GameServiceImpl implements GameService {
 
       // Determine winner and end the game
       game.setWinner(playerOne.getScore() > playerTwo.getScore() ? playerOne : playerTwo);
+      System.out.println(">>> Winner : " + game.getWinner().getName());
       game.setStatus(GameStatus.END);
     }
   }

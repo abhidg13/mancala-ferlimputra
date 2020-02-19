@@ -20,8 +20,7 @@ public interface PlayerService {
 
   /**
    * Create and save a new player.
-   * 
-   * @param playerBeans
+   *
    * @return
    */
   public Player createNewPlayer(String playerName, int playerNumber);

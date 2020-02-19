@@ -30,8 +30,7 @@ public interface GameService {
 
   /**
    * Starts a new game.
-   * 
-   * @param gameBeans
+   *
    * @return
    */
   public GameBeans start(String playerOneName, String playerTwoname);
@@ -39,8 +38,7 @@ public interface GameService {
   /**
    * Loads existing game.<br>
    * Returns loaded game's id.
-   * 
-   * @param gameBeans
+   *
    * @return
    */
   public String load(UUID gameId);
