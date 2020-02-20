@@ -26,16 +26,8 @@ public interface PlayerService {
   public Player createNewPlayer(String playerName, int playerNumber);
 
   /**
-   * Convert Player Bean to Player object.
-   * 
-   * @param playerBeans
-   * @return
-   */
-  public Player convertPlayerBeansToPlayer(PlayerBeans playerBeans);
-
-  /**
    * Saves or updates player.
-   * 
+   *
    * @param player
    * @return
    */

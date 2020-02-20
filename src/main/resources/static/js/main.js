@@ -11,6 +11,10 @@ const newGame = async () => {
   if (!playerTwoName) {
     return;
   }
+  if (playerOneName == playerTwoName) {
+    alert('Player names should be different!');
+      return;
+  }
 
   const url = `${BASE_URL}/start/${playerOneName}/${playerTwoName}`;
   const response = await fetch(url, {
@@ -23,29 +27,10 @@ const newGame = async () => {
 
   if (response.ok) {
     const newGameId = data.gameId;
-    const gameUrl = `${BASE_URL}/play/${newGameId}`;
-    window.location.href = gameUrl;
+    window.location.href = `${BASE_URL}/play/${newGameId}`;
   } else {
     alert(data.message);
   }
 };
 
-const loadGame = async () => {
-  const gameId = prompt("Enter Game ID:", "Game ID");
-
-  if (gameId) {
-    const url = `${BASE_URL}/load/${gameId}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (response.ok) {
-      const gameUrl = `${BASE_URL}/play/${gameId}`;
-      window.location.href = gameUrl;
-    } else {
-      alert(data.message);
-    }
-  }
-};
-
 document.getElementById("new-game-button").addEventListener("click", newGame);
-document.getElementById("load-game-button").addEventListener("click", loadGame);

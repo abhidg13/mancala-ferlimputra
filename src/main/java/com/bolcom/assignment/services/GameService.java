@@ -36,16 +36,8 @@ public interface GameService {
   public GameBeans start(String playerOneName, String playerTwoname);
 
   /**
-   * Loads existing game.<br>
-   * Returns loaded game's id.
-   *
-   * @return
-   */
-  public String load(UUID gameId);
-
-  /**
    * Saves or updates a Game.
-   * 
+   *
    * @param game
    * @return
    */

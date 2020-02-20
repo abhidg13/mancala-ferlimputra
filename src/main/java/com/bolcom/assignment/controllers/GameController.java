@@ -45,16 +45,6 @@ public class GameController {
     return gameService.pick(gameBeans.getId(), gameBeans.getPlayerTurn(), gameBeans.getIndex());
   }
 
-  @GetMapping("/load/{gameId}")
-  public Map<String, String> loadGame(@PathVariable("gameId") String gameId) {
-    try {
-      String loadedGameId = gameService.load(UUID.fromString(gameId));
-      return Collections.singletonMap("gameId", loadedGameId);
-    } catch (IllegalArgumentException ex) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-  }
-
   @GetMapping("/{gameId}")
   public GameBeans getGame(@PathVariable("gameId") String gameId) {
     try {

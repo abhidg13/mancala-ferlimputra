@@ -41,9 +41,4 @@ public class PlayerServiceImpl implements PlayerService {
     return savePlayer(player);
   }
 
-  @Override
-  public Player convertPlayerBeansToPlayer(PlayerBeans playerBeans) {
-    return modelMapper.map(playerBeans, Player.class);
-  }
-
 }

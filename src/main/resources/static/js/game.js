@@ -116,3 +116,8 @@ const pick = async e => {
 };
 
 window.onload = onLoad;
+
+document.getElementById("end-game-button").addEventListener("click",
+    function(){
+        window.location.href = `${BASE_URL}`;
+    });

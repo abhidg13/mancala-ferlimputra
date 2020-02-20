@@ -106,14 +106,14 @@ public class GameServiceImpl implements GameService {
     int minBoardLimit = getPlayerMinBoardLimit(playerNumber);
 
     if (minBoardLimit > index || index > maxBoardLimit || board[index] == 0) {
-      throw new InvalidMoveException(String.format("Index %d is not a valid move.", index));
+      throw new InvalidMoveException(String.format("Invalid move!", index));
     }
   }
 
   @Override
   public GameBeans pick(UUID gameId, int playerNumber, int index) {
     Game game = getGame(gameId);
-    validateGameStatus(game.getId(), game.getStatus());
+    validateGameStatus(game);
     validatePick(playerNumber, index, game.getBoard());
 
     // Proceed to place the stones
@@ -289,14 +289,13 @@ public class GameServiceImpl implements GameService {
   /**
    * Validate Game Status.<br>
    * Prevent ended game to be loaded or played.
-   * 
-   * @param gameId
-   * @param gameStatus
+   *
+   * @param game
    */
-  private void validateGameStatus(UUID gameId, GameStatus gameStatus) {
-    if (gameStatus.equals(GameStatus.END)) {
+  private void validateGameStatus(Game game) {
+    if (game.getStatus().equals(GameStatus.END)) {
       throw new InvalidGameStateException(
-          String.format("Game (%s) has ended. Please start a new game.", gameId));
+          String.format("Game has ended, WINNER is %s. Please start a new game!", game.getWinner().getName()));
     }
   }
 
@@ -312,17 +311,11 @@ public class GameServiceImpl implements GameService {
 
   @Override
   public GameBeans start(String playerOneName, String playerTwoName) {
+
     Player playerOne = playerService.createNewPlayer(playerOneName, PLAYER_ONE_NUM);
     Player playerTwo = playerService.createNewPlayer(playerTwoName, PLAYER_TWO_NUM);
     Game game = saveGame(new Game(playerOne, playerTwo));
     return modelMapper.map(game, GameBeans.class);
-  }
-
-  @Override
-  public String load(UUID gameId) {
-    GameBeans gameBeans = getGameBeansById(gameId);
-    validateGameStatus(gameBeans.getId(), gameBeans.getStatus());
-    return gameBeans.getId().toString();
   }
 
 }

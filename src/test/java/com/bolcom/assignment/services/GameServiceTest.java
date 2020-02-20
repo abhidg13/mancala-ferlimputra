@@ -332,13 +332,4 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
   }
 
-  @Test(expected = GameNotFoundException.class)
-  public void loadGame_invalidGameId_shouldThrowException() {
-    // Arrange
-    UUID gameId = UUID.randomUUID();
-
-    // Act
-    gameServiceImpl.load(gameId);
-  }
-
 }

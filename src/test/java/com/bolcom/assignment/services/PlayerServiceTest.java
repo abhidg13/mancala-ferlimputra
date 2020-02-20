@@ -1,6 +1,8 @@
 package com.bolcom.assignment.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import com.bolcom.assignment.beans.PlayerBeans;
 import com.bolcom.assignment.constants.GameConstants;
@@ -55,7 +57,7 @@ public class PlayerServiceTest {
     PlayerBeans playerBeans = new PlayerBeans("A", 100, GameConstants.PLAYER_ONE_NUM);
 
     // Act
-    Player player = playerServiceImpl.convertPlayerBeansToPlayer(playerBeans);
+    Player player = modelMapper.map(playerBeans, Player.class);
 
     // Assert
     assertEquals(player.getName(), playerBeans.getName());
