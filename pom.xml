@@ -5,15 +5,15 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.9.RELEASE</version>
+    <version>2.2.4.RELEASE</version>
     <relativePath/>
     <!-- lookup parent from repository -->
   </parent>
-  <groupId>com.bolcom</groupId>
-  <artifactId>assignment</artifactId>
+  <groupId>com.game</groupId>
+  <artifactId>mancala-by-abhi</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>assignment</name>
-  <description>Demo project for Spring Boot</description>
+  <name>mancala-by-abhi</name>
+  <description>Mancala game based on Java and Spring Boot</description>
 
   <properties>
     <java.version>1.8</java.version>
