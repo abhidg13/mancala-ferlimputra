@@ -1,4 +1,4 @@
-package com.game.mancala.services;
+package com.game.mancala.api;
 
 import java.util.UUID;
 import com.game.mancala.beans.GameBeans;

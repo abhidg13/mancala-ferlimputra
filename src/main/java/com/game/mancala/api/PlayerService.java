@@ -1,4 +1,4 @@
-package com.game.mancala.services;
+package com.game.mancala.api;
 
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;

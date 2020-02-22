@@ -1,10 +1,10 @@
-package com.game.mancala.controllers;
+package com.game.mancala.controller;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import com.game.mancala.beans.GameBeans;
-import com.game.mancala.services.GameService;
+import com.game.mancala.api.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

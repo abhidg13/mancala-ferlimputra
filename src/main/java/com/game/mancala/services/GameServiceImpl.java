@@ -3,14 +3,17 @@ package com.game.mancala.services;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
+
+import com.game.mancala.api.GameService;
+import com.game.mancala.api.PlayerService;
 import com.game.mancala.beans.GameBeans;
 import com.game.mancala.enums.GameStatus;
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.GameRepository;
-import com.game.mancala.system.exceptions.GameNotFoundException;
-import com.game.mancala.system.exceptions.InvalidGameStateException;
-import com.game.mancala.system.exceptions.InvalidMoveException;
+import com.game.mancala.exceptions.GameNotFoundException;
+import com.game.mancala.exceptions.InvalidGameStateException;
+import com.game.mancala.exceptions.InvalidMoveException;
 import com.game.mancala.constants.GameConstants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +109,7 @@ public class GameServiceImpl implements GameService {
     int minBoardLimit = getPlayerMinBoardLimit(playerNumber);
 
     if (minBoardLimit > index || index > maxBoardLimit || board[index] == 0) {
-      throw new InvalidMoveException(String.format("Invalid move!", index));
+      throw new InvalidMoveException("Invalid move!");
     }
   }
 

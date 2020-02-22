@@ -9,11 +9,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.game.mancala.api.PlayerService;
 import com.game.mancala.enums.GameStatus;
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.GameRepository;
-import com.game.mancala.system.exceptions.InvalidMoveException;
+import com.game.mancala.exceptions.InvalidMoveException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
