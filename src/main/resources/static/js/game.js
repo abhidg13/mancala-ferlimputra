@@ -76,12 +76,10 @@ const onLoad = async () => {
 
     const url = `${BASE_URL}/game/${gameId}`;
     const response = await fetch(url);
-    const data = await response.json();
 
     if (response.ok) {
+        const data = await response.json();
         populateGame(data);
-    } else {
-        alert(data.message);
     }
 };
 
@@ -103,15 +101,13 @@ const pick = async e => {
         method: POST,
         body: JSON.stringify(requestBody)
     });
-    const data = await response.json();
-
     if (response.ok) {
+        const data = await response.json();
         populateGame(data);
-        if (data.status == "END") {
-            alert(`Winner: ${data.winner.name}`);
-        }
     } else {
-        alert(data.message);
+        response.text().then(function(object) {
+            alert(object);
+        })
     }
 };
 

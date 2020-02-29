@@ -1,6 +1,6 @@
 package com.game.mancala.services;
 
-import static com.game.mancala.constants.GameConstants.*;
+import static com.game.mancala.constants.Constants.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,10 +12,10 @@ import java.util.UUID;
 
 import com.game.mancala.api.PlayerService;
 import com.game.mancala.enums.GameStatus;
+import com.game.mancala.exceptions.GameException;
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.GameRepository;
-import com.game.mancala.exceptions.InvalidMoveException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -276,7 +276,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(game.getStatus().equals(GameStatus.END));
+    assertTrue(game.getStatus().equals(GameStatus.END.getName()));
     assertTrue(game.getWinner().equals(playerTwo));
     assertTrue(playerTwo.getScore() == expectedScore);
   }
@@ -300,10 +300,10 @@ public class GameServiceTest {
     assertNotNull(captor.getValue().getBoard());
     assertNotNull(captor.getValue().getPlayerOne());
     assertNotNull(captor.getValue().getPlayerTwo());
-    assertEquals(GameStatus.IN_PROGRESS, captor.getValue().getStatus());
+    assertEquals(GameStatus.IN_PROGRESS.getName(), captor.getValue().getStatus());
   }
 
-  @Test(expected = InvalidMoveException.class)
+  @Test(expected = GameException.class)
   public void playerPick_invalidIndex_shouldThrowException() {
     // Arrange
     Game game = createGenericGame();
@@ -317,7 +317,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
   }
 
-  @Test(expected = InvalidMoveException.class)
+  @Test(expected = GameException.class)
   public void playerPick_emptyPit_shouldThrowException() {
     // Arrange
     Game game = createGenericGame();

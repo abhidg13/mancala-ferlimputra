@@ -5,7 +5,7 @@ package com.game.mancala.constants;
  * 
  * GameConstants
  */
-public class GameConstants {
+public class Constants {
 
   public final static int TOTAL_PITS = 12;
   public final static int PITS_PER_ROW = 6;

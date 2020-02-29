@@ -5,18 +5,18 @@ import java.util.UUID;
 /**
  * PlayerBeans
  */
-public class PlayerBeans {
+public class PlayerBean {
 
   private UUID id;
   private String name;
   private int score;
   private int number;
 
-  public PlayerBeans() {
+  public PlayerBean() {
     super();
   }
 
-  public PlayerBeans(String name, int score, int number) {
+  public PlayerBean(String name, int score, int number) {
     this.name = name;
     this.score = score;
     this.number = number;

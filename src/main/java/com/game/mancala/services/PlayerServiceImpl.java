@@ -1,7 +1,7 @@
 package com.game.mancala.services;
 
 import com.game.mancala.api.PlayerService;
-import com.game.mancala.constants.GameConstants;
+import com.game.mancala.constants.Constants;
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.PlayerRepository;
@@ -23,7 +23,7 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   public Player getPlayerByGame(Game game, int playerNumber) {
-    if (playerNumber == GameConstants.PLAYER_ONE_NUM) {
+    if (playerNumber == Constants.PLAYER_ONE_NUM) {
       return game.getPlayerOne();
     } else {
       return game.getPlayerTwo();

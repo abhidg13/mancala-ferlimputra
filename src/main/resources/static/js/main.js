@@ -23,13 +23,11 @@ const newGame = async () => {
     },
     method: POST
   });
-  const data = await response.json();
 
   if (response.ok) {
+    const data = await response.json();
     const newGameId = data.gameId;
     window.location.href = `${BASE_URL}/play/${newGameId}`;
-  } else {
-    alert(data.message);
   }
 };
 

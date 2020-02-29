@@ -1,6 +1,6 @@
 package com.game.mancala.models;
 
-import static com.game.mancala.constants.GameConstants.*;
+import static com.game.mancala.constants.Constants.*;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import javax.persistence.Entity;
@@ -30,7 +30,7 @@ public class Game {
   private Player playerTwo;
 
   @NotNull
-  private GameStatus status;
+  private String status;
 
   @NotNull
   private int[] board;
@@ -47,7 +47,7 @@ public class Game {
 
   public Game() {
     super();
-    status = GameStatus.IN_PROGRESS;
+    status = GameStatus.IN_PROGRESS.getName();
     board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
     totalTurn = 0;
   }
@@ -82,11 +82,11 @@ public class Game {
     this.playerTwo = playerTwo;
   }
 
-  public GameStatus getStatus() {
+  public String getStatus() {
     return this.status;
   }
 
-  public void setStatus(GameStatus status) {
+  public void setStatus(String status) {
     this.status = status;
   }
 

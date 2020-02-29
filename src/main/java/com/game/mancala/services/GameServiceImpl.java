@@ -6,15 +6,13 @@ import java.util.stream.IntStream;
 
 import com.game.mancala.api.GameService;
 import com.game.mancala.api.PlayerService;
-import com.game.mancala.beans.GameBeans;
+import com.game.mancala.beans.GameBean;
 import com.game.mancala.enums.GameStatus;
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.GameRepository;
-import com.game.mancala.exceptions.GameNotFoundException;
-import com.game.mancala.exceptions.InvalidGameStateException;
-import com.game.mancala.exceptions.InvalidMoveException;
-import com.game.mancala.constants.GameConstants;
+import com.game.mancala.exceptions.GameException;
+import com.game.mancala.constants.Constants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +46,7 @@ public class GameServiceImpl implements GameService {
     if (gameOptional.isPresent()) {
       return gameOptional.get();
     } else {
-      throw new GameNotFoundException("Invalid game Id.");
+      throw new GameException("Invalid game Id.");
     }
   }
 
@@ -60,10 +58,10 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int getPlayerBoardIndex(int playerNumber, int index, boolean normalize) {
-    if (normalize && index >= GameConstants.PITS_PER_ROW) {
-      index -= GameConstants.PITS_PER_ROW;
+    if (normalize && index >= Constants.PITS_PER_ROW) {
+      index -= Constants.PITS_PER_ROW;
     }
-    return index + (playerNumber * GameConstants.PITS_PER_ROW);
+    return index + (playerNumber * Constants.PITS_PER_ROW);
   }
 
   /**
@@ -73,7 +71,7 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int getOppositePitIndex(int index) {
-    return GameConstants.TOTAL_PITS - index - 1;
+    return Constants.TOTAL_PITS - index - 1;
   }
 
   /**
@@ -83,7 +81,7 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int getPlayerMaxBoardLimit(int playerNumber) {
-    return GameConstants.PITS_PER_ROW + (playerNumber * GameConstants.PITS_PER_ROW) - 1;
+    return Constants.PITS_PER_ROW + (playerNumber * Constants.PITS_PER_ROW) - 1;
   }
 
   /**
@@ -93,7 +91,7 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int getPlayerMinBoardLimit(int playerNumber) {
-    return 0 + (playerNumber * GameConstants.PITS_PER_ROW);
+    return 0 + (playerNumber * Constants.PITS_PER_ROW);
   }
 
   /**
@@ -109,19 +107,19 @@ public class GameServiceImpl implements GameService {
     int minBoardLimit = getPlayerMinBoardLimit(playerNumber);
 
     if (minBoardLimit > index || index > maxBoardLimit || board[index] == 0) {
-      throw new InvalidMoveException("Invalid move!");
+      throw new GameException("Invalid move!");
     }
   }
 
   @Override
-  public GameBeans pick(UUID gameId, int playerNumber, int index) {
+  public GameBean pick(UUID gameId, int playerNumber, int index) {
     Game game = getGame(gameId);
     validateGameStatus(game);
     validatePick(playerNumber, index, game.getBoard());
 
     // Proceed to place the stones
     game = place(game, playerNumber, index);
-    return modelMapper.map(game, GameBeans.class);
+    return modelMapper.map(game, GameBean.class);
   }
 
   /**
@@ -149,7 +147,7 @@ public class GameServiceImpl implements GameService {
 
     int i = pitIndex + 1;
     int currentPlayerNumber = playerNumber;
-    int opponentNumber = playerNumber == GameConstants.PLAYER_ONE_NUM ? GameConstants.PLAYER_TWO_NUM : GameConstants.PLAYER_ONE_NUM;
+    int opponentNumber = playerNumber == Constants.PLAYER_ONE_NUM ? Constants.PLAYER_TWO_NUM : Constants.PLAYER_ONE_NUM;
     boolean isPlayerBoard = true;
     boolean isFinalOnLargePit = false;
 
@@ -217,10 +215,10 @@ public class GameServiceImpl implements GameService {
     boolean isPlayerTwoEmpty = true;
 
     isPlayerOneEmpty = !IntStream
-        .range(getPlayerMinBoardLimit(GameConstants.PLAYER_ONE_NUM), getPlayerMaxBoardLimit(GameConstants.PLAYER_ONE_NUM))
+        .range(getPlayerMinBoardLimit(Constants.PLAYER_ONE_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_ONE_NUM))
         .anyMatch(i -> board[i] != 0);
     isPlayerTwoEmpty = !IntStream
-        .range(getPlayerMinBoardLimit(GameConstants.PLAYER_TWO_NUM), getPlayerMaxBoardLimit(GameConstants.PLAYER_TWO_NUM))
+        .range(getPlayerMinBoardLimit(Constants.PLAYER_TWO_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_TWO_NUM))
         .anyMatch(i -> board[i] != 0);
     System.out.println(">>> isPlayerOneEmpty: " + isPlayerOneEmpty);
     System.out.println(">>> isPlayerTwoEmpty: " + isPlayerTwoEmpty);
@@ -263,7 +261,7 @@ public class GameServiceImpl implements GameService {
       // Determine winner and end the game
       game.setWinner(playerOne.getScore() > playerTwo.getScore() ? playerOne : playerTwo);
       System.out.println(">>> Winner : " + game.getWinner().getName());
-      game.setStatus(GameStatus.END);
+      game.setStatus(GameStatus.END.getName());
     }
   }
 
@@ -296,15 +294,15 @@ public class GameServiceImpl implements GameService {
    * @param game
    */
   private void validateGameStatus(Game game) {
-    if (game.getStatus().equals(GameStatus.END)) {
-      throw new InvalidGameStateException(
+    if (game.getStatus().equals(GameStatus.END.getName())) {
+      throw new GameException(
           String.format("Game has ended, WINNER is %s. Please start a new game!", game.getWinner().getName()));
     }
   }
 
   @Override
-  public GameBeans getGameBeansById(UUID gameId) {
-    return modelMapper.map(getGame(gameId), GameBeans.class);
+  public GameBean getGameBeansById(UUID gameId) {
+    return modelMapper.map(getGame(gameId), GameBean.class);
   }
 
   @Override
@@ -313,12 +311,12 @@ public class GameServiceImpl implements GameService {
   }
 
   @Override
-  public GameBeans start(String playerOneName, String playerTwoName) {
+  public GameBean start(String playerOneName, String playerTwoName) {
 
-    Player playerOne = playerService.createNewPlayer(playerOneName, GameConstants.PLAYER_ONE_NUM);
-    Player playerTwo = playerService.createNewPlayer(playerTwoName, GameConstants.PLAYER_TWO_NUM);
+    Player playerOne = playerService.createNewPlayer(playerOneName, Constants.PLAYER_ONE_NUM);
+    Player playerTwo = playerService.createNewPlayer(playerTwoName, Constants.PLAYER_TWO_NUM);
     Game game = saveGame(new Game(playerOne, playerTwo));
-    return modelMapper.map(game, GameBeans.class);
+    return modelMapper.map(game, GameBean.class);
   }
 
 }

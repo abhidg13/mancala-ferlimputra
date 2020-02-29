@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
-import com.game.mancala.beans.PlayerBeans;
-import com.game.mancala.constants.GameConstants;
+import com.game.mancala.beans.PlayerBean;
+import com.game.mancala.constants.Constants;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.PlayerRepository;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class PlayerServiceTest {
   public void createNewPlayer_providedNameAndNumber_shouldSaveCorrectly() {
     // Arrange
     String playerName = "A";
-    int playerNumber = GameConstants.PLAYER_ONE_NUM;
+    int playerNumber = Constants.PLAYER_ONE_NUM;
     ArgumentCaptor<Player> captor = ArgumentCaptor.forClass(Player.class);
 
     // Act
@@ -54,15 +54,15 @@ public class PlayerServiceTest {
   @Test
   public void convertPlayerBeansToPlayer_providedPlayerBeans_shouldConvertCorrectly() {
     // Arrange
-    PlayerBeans playerBeans = new PlayerBeans("A", 100, GameConstants.PLAYER_ONE_NUM);
+    PlayerBean playerBean = new PlayerBean("A", 100, Constants.PLAYER_ONE_NUM);
 
     // Act
-    Player player = modelMapper.map(playerBeans, Player.class);
+    Player player = modelMapper.map(playerBean, Player.class);
 
     // Assert
-    assertEquals(player.getName(), playerBeans.getName());
-    assertEquals(player.getNumber(), playerBeans.getNumber());
-    assertEquals(player.getScore(), playerBeans.getScore());
+    assertEquals(player.getName(), playerBean.getName());
+    assertEquals(player.getNumber(), playerBean.getNumber());
+    assertEquals(player.getScore(), playerBean.getScore());
   }
 
 }

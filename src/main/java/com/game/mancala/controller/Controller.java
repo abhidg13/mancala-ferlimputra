@@ -3,10 +3,13 @@ package com.game.mancala.controller;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import com.game.mancala.beans.GameBeans;
+import com.game.mancala.beans.GameBean;
 import com.game.mancala.api.GameService;
+import com.game.mancala.exceptions.GameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @RestController
 @RequestMapping("game")
-public class GameController {
+public class Controller {
 
   @Autowired
   private GameService gameService;
@@ -41,12 +44,12 @@ public class GameController {
   }
 
   @PostMapping("/pick")
-  public GameBeans pick(@RequestBody GameBeans gameBeans) {
-    return gameService.pick(gameBeans.getId(), gameBeans.getPlayerTurn(), gameBeans.getIndex());
+  public GameBean pick(@RequestBody GameBean gameBean) {
+    return gameService.pick(gameBean.getId(), gameBean.getPlayerTurn(), gameBean.getIndex());
   }
 
   @GetMapping("/{gameId}")
-  public GameBeans getGame(@PathVariable("gameId") String gameId) {
+  public GameBean getGame(@PathVariable("gameId") String gameId) {
     try {
       return gameService.getGameBeansById(UUID.fromString(gameId));
     } catch (IllegalArgumentException ex) {
@@ -54,4 +57,8 @@ public class GameController {
     }
   }
 
+  @ExceptionHandler(value = GameException.class)
+  public ResponseEntity<String> exception(GameException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }

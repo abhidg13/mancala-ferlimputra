@@ -1,27 +1,26 @@
 package com.game.mancala.beans;
 
 import java.util.UUID;
-import com.game.mancala.enums.GameStatus;
 
 /**
  * GameBeans
  */
-public class GameBeans {
+public class GameBean {
 
   private UUID id;
-  private GameStatus status;
+  private String status;
   private int[] board;
   private int playerTurn;
   private int totalTurn;
   private int index;
-  private PlayerBeans playerOne;
-  private PlayerBeans playerTwo;
+  private PlayerBean playerOne;
+  private PlayerBean playerTwo;
 
-  public GameBeans() {
+  public GameBean() {
     super();
   }
 
-  public GameBeans(UUID id, GameStatus status, int[] board, int playerTurn, int totalTurn) {
+  public GameBean(UUID id, String status, int[] board, int playerTurn, int totalTurn) {
     this.id = id;
     this.status = status;
     this.board = board;
@@ -53,11 +52,11 @@ public class GameBeans {
     this.playerTurn = playerTurn;
   }
 
-  public GameStatus getStatus() {
+  public String getStatus() {
     return this.status;
   }
 
-  public void setStatus(GameStatus status) {
+  public void setStatus(String status) {
     this.status = status;
   }
 
@@ -77,19 +76,19 @@ public class GameBeans {
     this.index = index;
   }
 
-  public PlayerBeans getPlayerOne() {
+  public PlayerBean getPlayerOne() {
     return this.playerOne;
   }
 
-  public void setPlayerOne(PlayerBeans playerOne) {
+  public void setPlayerOne(PlayerBean playerOne) {
     this.playerOne = playerOne;
   }
 
-  public PlayerBeans getPlayerTwo() {
+  public PlayerBean getPlayerTwo() {
     return this.playerTwo;
   }
 
-  public void setPlayerTwo(PlayerBeans playerTwo) {
+  public void setPlayerTwo(PlayerBean playerTwo) {
     this.playerTwo = playerTwo;
   }
 
