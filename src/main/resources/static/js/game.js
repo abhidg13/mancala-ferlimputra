@@ -10,7 +10,7 @@ const registerEventListener = () => {
 const getPlayerNameByNumber = playerTurn => {
     const playerOneElement = document.getElementById("player1-name");
     const playerTwoElement = document.getElementById("player2-name");
-    return playerTurn == 0
+    return playerTurn === 0
         ? playerOneElement.innerText
         : playerTwoElement.innerText;
 };
@@ -31,7 +31,7 @@ const activateTurnDisplayIndicator = playerTurn => {
     //Set the color for the player row as per the turn
     const playerRow = document.getElementById(`player${playerTurn + 1}-row`);
     const opponentRow = document.getElementById(
-        `player${playerTurn == 0 ? 2 : 1}-row`
+        `player${playerTurn === 0 ? 2 : 1}-row`
     );
 
     playerRow.style.color = "rgb(68, 38, 11)";
@@ -43,7 +43,7 @@ const activateTurnDisplayIndicator = playerTurn => {
     //Make the player name blink as per the turn
     const playerNameElement = document.getElementById(`player${playerTurn + 1}-name`);
     const opponentNameElement = document.getElementById(
-        `player${playerTurn == 0 ? 2 : 1}-name`
+        `player${playerTurn === 0 ? 2 : 1}-name`
     );
     playerNameElement.classList.add("blink");
     opponentNameElement.classList.remove("blink");
@@ -56,7 +56,7 @@ const populateGame = data => {
     const playerTwoElement = document.getElementById("player2-name");
     const playerOneLargePit = document.getElementById("large-pit0");
     const playerTwoLargePit = document.getElementById("large-pit1");
-    const currenTurnElement = document.getElementById("player-turn");
+    const currentTurnElement = document.getElementById("player-turn");
 
     gameStatusElement.innerText = data.status;
     totalTurnElement.innerText = data.totalTurn;
@@ -65,7 +65,7 @@ const populateGame = data => {
     playerTwoElement.innerText = data.playerTwo.name;
     playerOneLargePit.innerText = data.playerOne.score;
     playerTwoLargePit.innerText = data.playerTwo.score;
-    currenTurnElement.innerText = getPlayerNameByNumber(data.playerTurn);
+    currentTurnElement.innerText = getPlayerNameByNumber(data.playerTurn);
 
     activateTurnDisplayIndicator(data.playerTurn);
     populateBoard(data.board);
@@ -84,7 +84,7 @@ const onLoad = async () => {
 };
 
 const pick = async e => {
-    const pitIndex = e.srcElement.id.replace(/^\D+/g, "");
+    const pitIndex = e.target.id.replace(/^\D+/g, "");
     const pickUrl = `${BASE_URL}/game/pick`;
     const currentPlayerName = document.getElementById("player-turn").innerText;
 

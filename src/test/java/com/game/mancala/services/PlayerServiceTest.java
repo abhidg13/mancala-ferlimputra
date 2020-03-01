@@ -1,8 +1,6 @@
 package com.game.mancala.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import com.game.mancala.beans.PlayerBean;
 import com.game.mancala.constants.Constants;

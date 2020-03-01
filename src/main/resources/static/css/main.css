@@ -8,8 +8,7 @@ header {
   background: rgb(68, 38, 11);
   cursor: pointer;
   display: block;
-  margin: auto;
-  margin-top: 20px;
+  margin: 20px auto auto;
   border-radius: 15%;
   height: 50px;
   width: 200px;

@@ -2,7 +2,6 @@ package com.game.mancala.api;
 
 import java.util.UUID;
 import com.game.mancala.beans.GameBean;
-import com.game.mancala.models.Game;
 
 /**
  * GameService
@@ -18,7 +17,7 @@ public interface GameService {
    * @param playerNumber
    * @param index
    */
-  public GameBean pick(UUID gameId, int playerNumber, int index);
+  GameBean pick(UUID gameId, int playerNumber, int index);
 
   /**
    * Get an existing game by id and convert it to bean.
@@ -26,21 +25,13 @@ public interface GameService {
    * @param gameId
    * @return
    */
-  public GameBean getGameBeansById(UUID gameId);
+  GameBean getGameBeansById(UUID gameId);
 
   /**
    * Starts a new game.
    *
    * @return
    */
-  public GameBean start(String playerOneName, String playerTwoname);
-
-  /**
-   * Saves or updates a Game.
-   *
-   * @param game
-   * @return
-   */
-  public Game saveGame(Game game);
+  GameBean start(String playerOneName, String playerTwoName);
 
 }

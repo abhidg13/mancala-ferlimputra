@@ -11,7 +11,7 @@ const newGame = async () => {
   if (!playerTwoName) {
     return;
   }
-  if (playerOneName == playerTwoName) {
+  if (playerOneName === playerTwoName) {
     alert('Player names should be different!');
       return;
   }

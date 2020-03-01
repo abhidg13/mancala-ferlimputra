@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for Game related logics.
+ * Service for Game related logic.
  * 
  * GameServiceImpl
  */
@@ -54,14 +54,10 @@ public class GameServiceImpl implements GameService {
    * Return pit index based on player sides.
    * 
    * @param playerNumber
-   * @param index
    * @return
    */
-  private int getPlayerBoardIndex(int playerNumber, int index, boolean normalize) {
-    if (normalize && index >= Constants.PITS_PER_ROW) {
-      index -= Constants.PITS_PER_ROW;
-    }
-    return index + (playerNumber * Constants.PITS_PER_ROW);
+  private int getPlayerBoardIndex(int playerNumber) {
+    return playerNumber * Constants.PITS_PER_ROW;
   }
 
   /**
@@ -91,7 +87,7 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private int getPlayerMinBoardLimit(int playerNumber) {
-    return 0 + (playerNumber * Constants.PITS_PER_ROW);
+    return (playerNumber * Constants.PITS_PER_ROW);
   }
 
   /**
@@ -146,7 +142,7 @@ public class GameServiceImpl implements GameService {
     int boardLimit = getPlayerMaxBoardLimit(playerNumber);
 
     int i = pitIndex + 1;
-    int currentPlayerNumber = playerNumber;
+    int currentPlayerNumber;
     int opponentNumber = playerNumber == Constants.PLAYER_ONE_NUM ? Constants.PLAYER_TWO_NUM : Constants.PLAYER_ONE_NUM;
     boolean isPlayerBoard = true;
     boolean isFinalOnLargePit = false;
@@ -156,7 +152,7 @@ public class GameServiceImpl implements GameService {
       if (i <= boardLimit) {
         // Check for Capture condition
         if (isPlayerBoard && hand == 1 && board[i] == 0) {
-          scoreToAdd += capture(i, opponentNumber, board);
+          scoreToAdd += capture(i, board);
         } else {
           // Place 1 stone from hand
           board[i]++;
@@ -179,7 +175,7 @@ public class GameServiceImpl implements GameService {
         isPlayerBoard = !isPlayerBoard;
         currentPlayerNumber = isPlayerBoard ? playerNumber : opponentNumber;
         boardLimit = getPlayerMaxBoardLimit(currentPlayerNumber);
-        i = getPlayerBoardIndex(currentPlayerNumber, 0, true) - 1;
+        i = getPlayerBoardIndex(currentPlayerNumber) - 1;
       }
       // Move to next pit
       i++;
@@ -211,33 +207,30 @@ public class GameServiceImpl implements GameService {
    * @return
    */
   private boolean anyEmptyBoard(int[] board) {
-    boolean isPlayerOneEmpty = true;
-    boolean isPlayerTwoEmpty = true;
+    boolean isPlayerOneEmpty;
+    boolean isPlayerTwoEmpty;
 
-    isPlayerOneEmpty = !IntStream
+    isPlayerOneEmpty = IntStream
         .range(getPlayerMinBoardLimit(Constants.PLAYER_ONE_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_ONE_NUM))
-        .anyMatch(i -> board[i] != 0);
-    isPlayerTwoEmpty = !IntStream
+        .noneMatch(i -> board[i] != 0);
+    isPlayerTwoEmpty = IntStream
         .range(getPlayerMinBoardLimit(Constants.PLAYER_TWO_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_TWO_NUM))
-        .anyMatch(i -> board[i] != 0);
-    System.out.println(">>> isPlayerOneEmpty: " + isPlayerOneEmpty);
-    System.out.println(">>> isPlayerTwoEmpty: " + isPlayerTwoEmpty);
+        .noneMatch(i -> board[i] != 0);
     return isPlayerOneEmpty || isPlayerTwoEmpty;
   }
 
   /**
    * Collects all stones in all player's pit and place it into large pit.<br>
-   * Triggerred when finish condition is reached.
+   * Triggered when finish condition is reached.
    * 
    * @param playerNumber
    * @param board
    * @return
    */
   private int collectStones(int playerNumber, int[] board) {
-    int scoreToAdd = IntStream
+    return IntStream
         .rangeClosed(getPlayerMinBoardLimit(playerNumber), getPlayerMaxBoardLimit(playerNumber))
         .map(i -> board[i]).sum();
-    return scoreToAdd;
   }
 
   /**
@@ -260,7 +253,6 @@ public class GameServiceImpl implements GameService {
 
       // Determine winner and end the game
       game.setWinner(playerOne.getScore() > playerTwo.getScore() ? playerOne : playerTwo);
-      System.out.println(">>> Winner : " + game.getWinner().getName());
       game.setStatus(GameStatus.END.getName());
     }
   }
@@ -270,11 +262,10 @@ public class GameServiceImpl implements GameService {
    * Will trigger if the last stone on hand is placed to own's empty pit.
    * 
    * @param index
-   * @param opponentNumber
    * @param board
    * @return
    */
-  private int capture(int index, int opponentNumber, int[] board) {
+  private int capture(int index, int[] board) {
     // Get opponent's pit index
     int oppositePitIndex = getOppositePitIndex(index);
 
@@ -305,8 +296,7 @@ public class GameServiceImpl implements GameService {
     return modelMapper.map(getGame(gameId), GameBean.class);
   }
 
-  @Override
-  public Game saveGame(Game game) {
+  private Game saveGame(Game game) {
     return gameRepository.save(game);
   }
 

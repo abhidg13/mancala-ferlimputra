@@ -4,7 +4,6 @@ import static com.game.mancala.constants.Constants.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
@@ -78,7 +77,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerOne().getScore());
+    assertEquals(expectedScore, game.getPlayerOne().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -100,7 +99,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerTwo().getScore());
+    assertEquals(expectedScore, game.getPlayerTwo().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -122,7 +121,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerOne().getScore());
+    assertEquals(expectedScore, game.getPlayerOne().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -144,7 +143,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerTwo().getScore());
+    assertEquals(expectedScore, game.getPlayerTwo().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -169,7 +168,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerOne().getScore());
+    assertEquals(expectedScore, game.getPlayerOne().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -194,7 +193,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerTwo().getScore());
+    assertEquals(expectedScore, game.getPlayerTwo().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -221,7 +220,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerOne().getScore());
+    assertEquals(expectedScore, game.getPlayerOne().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -248,7 +247,7 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(expectedScore == game.getPlayerTwo().getScore());
+    assertEquals(expectedScore, game.getPlayerTwo().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
@@ -276,9 +275,9 @@ public class GameServiceTest {
     gameServiceImpl.pick(game.getId(), playerNumber, index);
 
     // Assert
-    assertTrue(game.getStatus().equals(GameStatus.END.getName()));
-    assertTrue(game.getWinner().equals(playerTwo));
-    assertTrue(playerTwo.getScore() == expectedScore);
+    assertEquals(game.getStatus(), GameStatus.END.getName());
+    assertEquals(game.getWinner(), playerTwo);
+    assertEquals(playerTwo.getScore(), expectedScore);
   }
 
   @Test
@@ -308,13 +307,12 @@ public class GameServiceTest {
     // Arrange
     Game game = createGenericGame();
     Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_ONE_NUM;
     int index = 6;
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
 
     // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, index);
   }
 
   @Test(expected = GameException.class)
@@ -324,13 +322,12 @@ public class GameServiceTest {
     game.getBoard()[0] = 0;
 
     Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_ONE_NUM;
     int index = 0;
 
     when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
 
     // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, index);
   }
 
 }

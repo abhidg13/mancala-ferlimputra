@@ -15,14 +15,14 @@ public interface PlayerService {
    * @param playerNumber
    * @return
    */
-  public Player getPlayerByGame(Game game, int playerNumber);
+  Player getPlayerByGame(Game game, int playerNumber);
 
   /**
    * Create and save a new player.
    *
    * @return
    */
-  public Player createNewPlayer(String playerName, int playerNumber);
+  Player createNewPlayer(String playerName, int playerNumber);
 
   /**
    * Saves or updates player.
@@ -30,5 +30,5 @@ public interface PlayerService {
    * @param player
    * @return
    */
-  public Player savePlayer(Player player);
+  Player savePlayer(Player player);
 }
