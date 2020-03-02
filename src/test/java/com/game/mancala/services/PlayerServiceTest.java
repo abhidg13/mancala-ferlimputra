@@ -17,7 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * PlayerServiceTest
+ * Test class for the Player service implementation
  */
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
@@ -33,16 +33,16 @@ public class PlayerServiceTest {
   private ModelMapper modelMapper;
 
   @Test
-  public void createNewPlayer_providedNameAndNumber_shouldSaveCorrectly() {
-    // Arrange
-    String playerName = "A";
+  public void createNewPlayerTest() {
+    // Setup
+    String playerName = "ABC";
     int playerNumber = Constants.PLAYER_ONE_NUM;
     ArgumentCaptor<Player> captor = ArgumentCaptor.forClass(Player.class);
 
-    // Act
+    // Create new player
     playerServiceImpl.createNewPlayer(playerName, playerNumber);
 
-    // Assert
+    // Verify
     verify(playerRepository).save(captor.capture());
     assertEquals(playerName, captor.getValue().getName());
     assertEquals(playerNumber, captor.getValue().getNumber());
@@ -50,17 +50,16 @@ public class PlayerServiceTest {
   }
 
   @Test
-  public void convertPlayerBeansToPlayer_providedPlayerBeans_shouldConvertCorrectly() {
-    // Arrange
+  public void convertPlayerBeansToPlayerTest() {
+    // Setup
     PlayerBean playerBean = new PlayerBean("A", 100, Constants.PLAYER_ONE_NUM);
 
-    // Act
+    // Map playerBean to Player.class
     Player player = modelMapper.map(playerBean, Player.class);
 
-    // Assert
+    // Verify
     assertEquals(player.getName(), playerBean.getName());
     assertEquals(player.getNumber(), playerBean.getNumber());
     assertEquals(player.getScore(), playerBean.getScore());
   }
-
 }

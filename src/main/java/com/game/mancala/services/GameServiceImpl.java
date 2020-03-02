@@ -202,14 +202,16 @@ public class GameServiceImpl implements GameService {
 
   /**
    * Checks whether there's any player's board that is empty.
+   * For Player 1: Pit 1 until 5 is empty; only player 1's last pit can have stones.
+   * For Player 2: Pit 6 until 10 is empty; only player 2's last pit can have stones.
    *
    * @param board
-   * @return
+   * @return true/false
    */
   private boolean anyEmptyBoard(int[] board) {
     boolean isPlayerOneEmpty;
     boolean isPlayerTwoEmpty;
-
+    //Used IntStream range to make the start inclusive and the end exclusive
     isPlayerOneEmpty = IntStream
         .range(getPlayerMinBoardLimit(Constants.PLAYER_ONE_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_ONE_NUM))
         .noneMatch(i -> board[i] != 0);

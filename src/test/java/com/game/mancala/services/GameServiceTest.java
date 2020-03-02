@@ -1,24 +1,16 @@
 package com.game.mancala.services;
 
-import static com.game.mancala.constants.Constants.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.game.mancala.api.PlayerService;
 import com.game.mancala.enums.GameStatus;
 import com.game.mancala.exceptions.GameException;
 import com.game.mancala.models.Game;
 import com.game.mancala.models.Player;
 import com.game.mancala.repositories.GameRepository;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -26,8 +18,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.game.mancala.constants.Constants.PLAYER_ONE_NUM;
+import static com.game.mancala.constants.Constants.PLAYER_TWO_NUM;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 /**
- * GameServiceTest
+ * Test class for the Game service implementation
  */
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
@@ -45,289 +46,153 @@ public class GameServiceTest {
   @Spy
   private ModelMapper modelMapper;
 
-  /**
-   * Helper method to generate Game with generic Players.
-   * 
-   * @return
-   */
-  private Game createGenericGame() {
-    Player playerOne = new Player("A", PLAYER_ONE_NUM);
-    Player playerTwo = new Player("B", PLAYER_TWO_NUM);
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
-    Game game = new Game(playerOne, playerTwo);
+  private Game game;
+
+  @Before
+  public void prepareGameTest() {
+    //Create new players
+    Player playerOne = new Player("ABC", PLAYER_ONE_NUM);
+    Player playerTwo = new Player("XYZ", PLAYER_TWO_NUM);
+    //Create new game
+    game = new Game(playerOne, playerTwo);
     game.setId(UUID.randomUUID());
-    return game;
+
+    //Setup mocking
+    when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
+    when(gameRepository.save(game)).thenReturn(game);
+    when(playerService.getPlayerByGame(game, PLAYER_ONE_NUM)).thenReturn(game.getPlayerOne());
+    when(playerService.getPlayerByGame(game, PLAYER_TWO_NUM)).thenReturn(game.getPlayerTwo());
   }
 
-  @Test
-  public void playerOnePick_doesNotCrossOver_shouldPlacesStoneAndIncreasesScore() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_ONE_NUM;
-    int index = 0;
-    int[] expectedBoard = new int[] {0, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6};
-    int expectedScore = 1;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerOne());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerOne().getScore());
+  private void verifyGameTest(Game game, int expectedPlayerOneScore, int expectedPlayerTwoScore, int[] expectedBoard) {
+    assertEquals(expectedPlayerOneScore, game.getPlayerOne().getScore());
+    assertEquals(expectedPlayerTwoScore, game.getPlayerTwo().getScore());
     assertArrayEquals(expectedBoard, game.getBoard());
   }
 
+  /**
+   * Test the first move by player 1 - picking of player 1's first pit.
+   */
   @Test
-  public void playerTwoPick_doesNotCrossOver_shouldPlacesStoneAndIncreasesScore() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_TWO_NUM;
-    int index = 6;
-    int[] expectedBoard = new int[] {6, 6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7};
-    int expectedScore = 1;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerTwo().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+  public void playerOnePickFirstMoveFirstPitTest() {
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
+    verifyGameTest(game, 1, 0, new int[] {0, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6});
   }
 
+  /**
+   * Test the first move by player 2 - picking of player 2's first pit.
+   */
   @Test
-  public void playerOnePick_crossOverToOpponentsBoard_shouldPlacesStoneAndIncreasesScore() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_ONE_NUM;
-    int index = 5;
-    int[] expectedBoard = new int[] {6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7, 6};
-    int expectedScore = 1;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerOne());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerOne().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+  public void playerTwoPickFirstMoveFirstPitTest() {
+    gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 6);
+    verifyGameTest(game, 0, 1, new int[] {6, 6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7});
   }
 
+  /**
+   * Test the first move by player 1 - picking of player 1's sixth pit.
+   */
   @Test
-  public void playerTwoPick_crossOverToOpponentsBoard_shouldPlacesStoneAndIncreasesScore() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_TWO_NUM;
-    int index = 11;
-    int[] expectedBoard = new int[] {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 0};
-    int expectedScore = 1;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerTwo().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+  public void playerOnePickFirstMoveSixthPitTest() {
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 5);
+    verifyGameTest(game, 1, 0, new int[] {6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7, 6});
   }
 
+  /**
+   * Test the first move by player 2 - picking of player 2's sixth pit.
+   */
   @Test
-  public void playerOnePick_highNumberOnhand_shouldLoopBackToOwnPits() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_ONE_NUM;
-    int index = 0;
-    int[] expectedBoard = new int[] {1, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
-    int expectedScore = 1;
-
-    // Increases stones in picked pit
-    game.getBoard()[index] = 14;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerOne());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerOne().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+  public void playerTwoPickFirstMoveSixthPitTest() {
+    gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 11);
+    verifyGameTest(game, 0, 1, new int[] {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 0});
   }
 
+  /**
+   * Test the move by player 1 - picking of player 1's first pit with the highest number on it.
+   * It should loop back to the player 1's own pit.
+   */
   @Test
-  public void playerTwoPick_highNumberOnhand_shouldLoopBackToOwnPits() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_TWO_NUM;
-    int index = 6;
-    int[] expectedBoard = new int[] {7, 7, 7, 7, 7, 7, 1, 8, 7, 7, 7, 7};
-    int expectedScore = 1;
-
-    // Increases stones in picked pit
-    game.getBoard()[6] = 14;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerTwo().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+  public void playerOnePickHighestNumberOnFirstPitTest() {
+    game.getBoard()[0] = 14; //Set the highest number on the first pit of player 1
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
+    verifyGameTest(game, 1, 0, new int[] {1, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7});
   }
 
+  /**
+   * Test the move by player 2 - picking of player 2's first pit with the highest number on it.
+   * It should loop back to the player 2's own pit.
+   */
   @Test
-  public void playerOnePlace_lastStonePlacedInEmptyPit_shouldCaptureOpponentPit() {
-    // Arrange
-    Game game = createGenericGame();
+  public void playerTwoPickHighestNumberOnFirstPitTest() {
+    game.getBoard()[6] = 14; //Set the highest number on the first pit of player 1
+    gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 6);
+    verifyGameTest(game, 0, 1, new int[] {7, 7, 7, 7, 7, 7, 1, 8, 7, 7, 7, 7});
+  }
 
-    // Opponent: 6, 5, 4, 3, 2, 1
-    // Player: 3, 6, 6, 0, 6, 6
+  /**
+   * Test the scenario of the last stone being placed in an empty pit.
+   * It should capture opponent's pit.
+   * Player 2: 6, 5, 4, 3, 2, 1
+   * Player 1: 3, 6, 6, 0, 6, 6
+   * With Player 1 picking the first pit, his/her fourth pit has 1 stone, so player 2's fourth pit will be captured.
+   */
+  @Test
+  public void playerOneLastStoneInEmptyPitTest() {
     game.setBoard(new int[] {3, 6, 6, 0, 6, 6, 1, 2, 3, 4, 5, 6});
-
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_ONE_NUM;
-    int index = 0;
-    int[] expectedBoard = new int[] {0, 7, 7, 0, 6, 6, 1, 2, 0, 4, 5, 6};
-    int expectedScore = 4; // 3 from capture + 1 from last stone
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerOne());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerOne().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
+    //Player 1's expected score: 3 from player 2's fourth pit + 1 from his/her fourth pit
+    verifyGameTest(game, 4, 0, new int[] {0, 7, 7, 0, 6, 6, 1, 2, 0, 4, 5, 6});
   }
 
+  /**
+   * Test the scenario of the last stone being placed in an empty pit.
+   * It should capture opponent's pit.
+   * Player 2: 6, 6, 0, 6, 6, 3
+   * Player 1: 1, 2, 3, 4, 5, 6
+   * With Player 2 picking the first pit, his/her fourth pit has 1 stone, so player 1's fourth pit will be captured.
+   */
   @Test
-  public void playerTwoPlace_lastStonePlacedInEmptyPit_shouldCaptureOpponentPit() {
-    // Arrange
-    Game game = createGenericGame();
-
-    // Player: 6, 6, 0, 6, 6, 3
-    // Opponent: 1, 2, 3, 4, 5, 6
+  public void playerTwoLastStoneInEmptyPitTest() {
     game.setBoard(new int[] {1, 2, 3, 4, 5, 6, 3, 6, 6, 0, 6, 6});
-
-    Optional<Game> gameOptional = Optional.of(game);
-    int playerNumber = PLAYER_TWO_NUM;
-    int index = 6;
-    int[] expectedBoard = new int[] {1, 2, 0, 4, 5, 6, 0, 7, 7, 0, 6, 6};
-    int expectedScore = 4; // 3 from capture + 1 from last stone
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(game.getPlayerTwo());
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
-    assertEquals(expectedScore, game.getPlayerTwo().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+    gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 6);
+    //Player 2's expected score: 3 from player 1's fourth pit + 1 from his/her fourth pit
+    verifyGameTest(game, 0, 4, new int[] {1, 2, 0, 4, 5, 6, 0, 7, 7, 0, 6, 6});
   }
 
+  /**
+   * Test the scenario of Player 1 winning the game because of all empty pits.
+   * Below is the test game scenario
+   * Player 2: 12, 4, 0, 0, 0, 0 - Current score: 19
+   * Player 1:  0, 0, 3, 1, 0, 0 - Current score: 33
+   */
   @Test
-  public void playerOnePlace_allPitsEmpty_shouldFinishGame() {
-    // Arrange
-    Game game = createGenericGame();
-
-    // Player: 0, 0, 0, 0, 0, 1
-    // Opponent: 1, 2, 3, 4, 5, 6
-    game.setBoard(new int[] {0, 0, 0, 0, 0, 1, 1, 2, 3, 4, 5, 6});
-
-    Optional<Game> gameOptional = Optional.of(game);
-    Player playerOne = game.getPlayerOne();
-    Player playerTwo = game.getPlayerTwo();
-    int playerNumber = PLAYER_ONE_NUM;
-    int index = 5;
-    int expectedScore = 21;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-    when(gameRepository.save(game)).thenReturn(game);
-    when(playerService.getPlayerByGame(game, playerNumber)).thenReturn(playerOne);
-
-    // Act
-    gameServiceImpl.pick(game.getId(), playerNumber, index);
-
-    // Assert
+  public void playerOneWinsWithAllEmptyPitsTest() {
+    game.setBoard(new int[] {0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 4, 12});
+    game.getPlayerOne().setScore(33);
+    game.getPlayerTwo().setScore(19);
+    gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 10);
+    verifyGameTest(game, 39, 33, new int[] {1, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 13});
     assertEquals(game.getStatus(), GameStatus.END.getName());
-    assertEquals(game.getWinner(), playerTwo);
-    assertEquals(playerTwo.getScore(), expectedScore);
+    assertEquals(game.getWinner(), game.getPlayerOne());
   }
 
   @Test
-  public void startNewGame_shouldSaveGameAndReturnBean() {
-    // Arrange
-    String playerOneName = "A";
-    String playerTwoName = "B";
-    ArgumentCaptor<Game> captor = ArgumentCaptor.forClass(Game.class);
-
-    when(gameRepository.save(ArgumentMatchers.any(Game.class))).thenReturn(new Game());
-    when(playerService.createNewPlayer(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt()))
-        .thenReturn(new Player());
-
-    // Act
-    gameServiceImpl.start(playerOneName, playerTwoName);
-
-    // Assert
-    verify(gameRepository).save(captor.capture());
-    assertNotNull(captor.getValue().getBoard());
-    assertNotNull(captor.getValue().getPlayerOne());
-    assertNotNull(captor.getValue().getPlayerTwo());
-    assertEquals(GameStatus.IN_PROGRESS.getName(), captor.getValue().getStatus());
+  public void playerPickInvalidIndexTest() {
+    prepareExceptionHandlingForTest();
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 6);
   }
 
-  @Test(expected = GameException.class)
-  public void playerPick_invalidIndex_shouldThrowException() {
-    // Arrange
-    Game game = createGenericGame();
-    Optional<Game> gameOptional = Optional.of(game);
-    int index = 6;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-
-    // Act
-    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, index);
-  }
-
-  @Test(expected = GameException.class)
-  public void playerPick_emptyPit_shouldThrowException() {
-    // Arrange
-    Game game = createGenericGame();
+  @Test
+  public void playerPickEmptyPitTest() {
+    prepareExceptionHandlingForTest();
     game.getBoard()[0] = 0;
-
-    Optional<Game> gameOptional = Optional.of(game);
-    int index = 0;
-
-    when(gameRepository.findById(game.getId())).thenReturn(gameOptional);
-
-    // Act
-    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, index);
+    gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
   }
 
+  private void prepareExceptionHandlingForTest() {
+    expectedException.expect(GameException.class);
+    expectedException.expectMessage("Invalid move!");
+  }
 }
