@@ -1,8 +1,16 @@
 package com.game.mancala.models;
 
 import static com.game.mancala.constants.Constants.*;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -33,7 +41,8 @@ public class Game {
   private String status;
 
   @NotNull
-  private int[] board;
+  @ElementCollection
+  private List<Integer> board;
 
   @NotNull
   private int playerTurn;
@@ -47,8 +56,13 @@ public class Game {
 
   public Game() {
     super();
-    status = GameStatus.IN_PROGRESS.getName();
-    board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
+    status = GameStatus.IN_PROGRESS.getName(); //Set game status to IN_PROGRESS
+    //Set 6 stones in each of the 12 pits
+    //board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
+    board = Stream.generate(String::new)
+            .limit(TOTAL_PITS)
+            .map(s -> PITS_PER_ROW)
+            .collect(Collectors.toCollection(LinkedList::new));
     totalTurn = 0;
   }
 
@@ -90,11 +104,9 @@ public class Game {
     this.status = status;
   }
 
-  public int[] getBoard() {
-    return this.board;
-  }
+  public List<Integer> getBoard() { return this.board; }
 
-  public void setBoard(int[] board) {
+  public void setBoard(List<Integer> board) {
     this.board = board;
   }
 

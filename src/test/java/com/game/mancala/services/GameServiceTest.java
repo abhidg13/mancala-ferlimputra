@@ -18,12 +18,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.game.mancala.constants.Constants.PLAYER_ONE_NUM;
 import static com.game.mancala.constants.Constants.PLAYER_TWO_NUM;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -67,10 +69,10 @@ public class GameServiceTest {
     when(playerService.getPlayerByGame(game, PLAYER_TWO_NUM)).thenReturn(game.getPlayerTwo());
   }
 
-  private void verifyGameTest(Game game, int expectedPlayerOneScore, int expectedPlayerTwoScore, int[] expectedBoard) {
+  private void verifyGameTest(Game game, int expectedPlayerOneScore, int expectedPlayerTwoScore, List<Integer> expectedBoard) {
     assertEquals(expectedPlayerOneScore, game.getPlayerOne().getScore());
     assertEquals(expectedPlayerTwoScore, game.getPlayerTwo().getScore());
-    assertArrayEquals(expectedBoard, game.getBoard());
+    assertEquals(expectedBoard, game.getBoard());
   }
 
   /**
@@ -79,7 +81,8 @@ public class GameServiceTest {
   @Test
   public void playerOnePickFirstMoveFirstPitTest() {
     gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
-    verifyGameTest(game, 1, 0, new int[] {0, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6});
+    verifyGameTest(game, 1, 0,
+            new LinkedList<Integer>(Arrays.asList(0, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6)));
   }
 
   /**
@@ -88,7 +91,8 @@ public class GameServiceTest {
   @Test
   public void playerTwoPickFirstMoveFirstPitTest() {
     gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 6);
-    verifyGameTest(game, 0, 1, new int[] {6, 6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7});
+    verifyGameTest(game, 0, 1,
+            new LinkedList<Integer>(Arrays.asList(6, 6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7)));
   }
 
   /**
@@ -97,7 +101,8 @@ public class GameServiceTest {
   @Test
   public void playerOnePickFirstMoveSixthPitTest() {
     gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 5);
-    verifyGameTest(game, 1, 0, new int[] {6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7, 6});
+    verifyGameTest(game, 1, 0,
+            new LinkedList<Integer>(Arrays.asList(6, 6, 6, 6, 6, 0, 7, 7, 7, 7, 7, 6)));
   }
 
   /**
@@ -106,7 +111,8 @@ public class GameServiceTest {
   @Test
   public void playerTwoPickFirstMoveSixthPitTest() {
     gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 11);
-    verifyGameTest(game, 0, 1, new int[] {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 0});
+    verifyGameTest(game, 0, 1,
+            new LinkedList<Integer>(Arrays.asList(7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 0)));
   }
 
   /**
@@ -115,9 +121,10 @@ public class GameServiceTest {
    */
   @Test
   public void playerOnePickHighestNumberOnFirstPitTest() {
-    game.getBoard()[0] = 14; //Set the highest number on the first pit of player 1
+    game.getBoard().set(0, 14); //Set the highest number on the first pit of player 1
     gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
-    verifyGameTest(game, 1, 0, new int[] {1, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7});
+    verifyGameTest(game, 1, 0,
+            new LinkedList<Integer>(Arrays.asList(1, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7)));
   }
 
   /**
@@ -126,9 +133,10 @@ public class GameServiceTest {
    */
   @Test
   public void playerTwoPickHighestNumberOnFirstPitTest() {
-    game.getBoard()[6] = 14; //Set the highest number on the first pit of player 1
+    game.getBoard().set(6, 14); //Set the highest number on the first pit of player 1
     gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 6);
-    verifyGameTest(game, 0, 1, new int[] {7, 7, 7, 7, 7, 7, 1, 8, 7, 7, 7, 7});
+    verifyGameTest(game, 0, 1,
+            new LinkedList<Integer>(Arrays.asList(7, 7, 7, 7, 7, 7, 1, 8, 7, 7, 7, 7)));
   }
 
   /**
@@ -140,10 +148,11 @@ public class GameServiceTest {
    */
   @Test
   public void playerOneLastStoneInEmptyPitTest() {
-    game.setBoard(new int[] {3, 6, 6, 0, 6, 6, 1, 2, 3, 4, 5, 6});
+    game.setBoard(new LinkedList<Integer>(Arrays.asList(3, 6, 6, 0, 6, 6, 1, 2, 3, 4, 5, 6)));
     gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
     //Player 1's expected score: 3 from player 2's fourth pit + 1 from his/her fourth pit
-    verifyGameTest(game, 4, 0, new int[] {0, 7, 7, 0, 6, 6, 1, 2, 0, 4, 5, 6});
+    verifyGameTest(game, 4, 0,
+            new LinkedList<Integer>(Arrays.asList(0, 7, 7, 0, 6, 6, 1, 2, 0, 4, 5, 6)));
   }
 
   /**
@@ -155,10 +164,11 @@ public class GameServiceTest {
    */
   @Test
   public void playerTwoLastStoneInEmptyPitTest() {
-    game.setBoard(new int[] {1, 2, 3, 4, 5, 6, 3, 6, 6, 0, 6, 6});
+    game.setBoard(new LinkedList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 3, 6, 6, 0, 6, 6)));
     gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 6);
     //Player 2's expected score: 3 from player 1's fourth pit + 1 from his/her fourth pit
-    verifyGameTest(game, 0, 4, new int[] {1, 2, 0, 4, 5, 6, 0, 7, 7, 0, 6, 6});
+    verifyGameTest(game, 0, 4,
+            new LinkedList<Integer>(Arrays.asList(1, 2, 0, 4, 5, 6, 0, 7, 7, 0, 6, 6)));
   }
 
   /**
@@ -169,11 +179,12 @@ public class GameServiceTest {
    */
   @Test
   public void playerOneWinsWithAllEmptyPitsTest() {
-    game.setBoard(new int[] {0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 4, 12});
+    game.setBoard(new LinkedList<Integer>(Arrays.asList(0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 4, 12)));
     game.getPlayerOne().setScore(33);
     game.getPlayerTwo().setScore(19);
     gameServiceImpl.pick(game.getId(), PLAYER_TWO_NUM, 10);
-    verifyGameTest(game, 39, 33, new int[] {1, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 13});
+    verifyGameTest(game, 39, 33,
+            new LinkedList<Integer>(Arrays.asList(1, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 13)));
     assertEquals(game.getStatus(), GameStatus.END.getName());
     assertEquals(game.getWinner(), game.getPlayerOne());
   }
@@ -187,7 +198,7 @@ public class GameServiceTest {
   @Test
   public void playerPickEmptyPitTest() {
     prepareExceptionHandlingForTest();
-    game.getBoard()[0] = 0;
+    game.getBoard().set(0, 0);
     gameServiceImpl.pick(game.getId(), PLAYER_ONE_NUM, 0);
   }
 

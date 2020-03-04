@@ -1,5 +1,6 @@
 package com.game.mancala.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -34,6 +35,28 @@ public class GameServiceImpl implements GameService {
   @Autowired
   private ModelMapper modelMapper;
 
+  @Override
+  public GameBean getGameBeansById(UUID gameId) {
+    return modelMapper.map(getGame(gameId), GameBean.class);
+  }
+
+  @Override
+  public GameBean start(String playerOneName, String playerTwoName) {
+    Player playerOne = playerService.createNewPlayer(playerOneName, Constants.PLAYER_ONE_NUM);
+    Player playerTwo = playerService.createNewPlayer(playerTwoName, Constants.PLAYER_TWO_NUM);
+    Game game = saveGame(new Game(playerOne, playerTwo));
+    return modelMapper.map(game, GameBean.class);
+  }
+
+  @Override
+  public GameBean pick(UUID gameId, int playerNumber, int index) {
+    Game game = getGame(gameId);
+    validateGameStatus(game);
+    validatePick(playerNumber, index, game.getBoard());
+    game = processPick(game, playerNumber, index);
+    return modelMapper.map(game, GameBean.class);
+  }
+
   /**
    * Get Game by id.
    * 
@@ -42,12 +65,10 @@ public class GameServiceImpl implements GameService {
    */
   private Game getGame(UUID gameId) {
     Optional<Game> gameOptional = gameRepository.findById(gameId);
-
     if (gameOptional.isPresent()) {
       return gameOptional.get();
-    } else {
-      throw new GameException("Invalid game Id.");
     }
+    throw new GameException("Invalid game Id.");
   }
 
   /**
@@ -98,24 +119,13 @@ public class GameServiceImpl implements GameService {
    * @param playerNumber
    * @param index
    */
-  private void validatePick(int playerNumber, int index, int[] board) {
+  private void validatePick(int playerNumber, int index, List<Integer> board) {
     int maxBoardLimit = getPlayerMaxBoardLimit(playerNumber);
     int minBoardLimit = getPlayerMinBoardLimit(playerNumber);
 
-    if (minBoardLimit > index || index > maxBoardLimit || board[index] == 0) {
+    if (minBoardLimit > index || index > maxBoardLimit || board.get(index) == 0) {
       throw new GameException("Invalid move!");
     }
-  }
-
-  @Override
-  public GameBean pick(UUID gameId, int playerNumber, int index) {
-    Game game = getGame(gameId);
-    validateGameStatus(game);
-    validatePick(playerNumber, index, game.getBoard());
-
-    // Proceed to place the stones
-    game = place(game, playerNumber, index);
-    return modelMapper.map(game, GameBean.class);
   }
 
   /**
@@ -129,75 +139,83 @@ public class GameServiceImpl implements GameService {
    * @param playerNumber
    * @param pitIndex
    */
-  private Game place(Game game, int playerNumber, int pitIndex) {
+  private Game processPick(Game game, int playerNumber, int pitIndex) {
     Player player = playerService.getPlayerByGame(game, playerNumber);
-    int[] board = game.getBoard();
-    int scoreToAdd = 0;
 
-    // Get all stones from the selected pit
-    int hand = board[pitIndex];
-    board[pitIndex] = 0;
+    //Iterate through the next pits with the hand value
+    iterateThroughNextPits(game, playerNumber, pitIndex, player);
 
-    // Get current player max board index
-    int boardLimit = getPlayerMaxBoardLimit(playerNumber);
-
-    int i = pitIndex + 1;
-    int currentPlayerNumber;
-    int opponentNumber = playerNumber == Constants.PLAYER_ONE_NUM ? Constants.PLAYER_TWO_NUM : Constants.PLAYER_ONE_NUM;
-    boolean isPlayerBoard = true;
-    boolean isFinalOnLargePit = false;
-
-    while (hand > 0) {
-      // If current index is not a large pit
-      if (i <= boardLimit) {
-        // Check for Capture condition
-        if (isPlayerBoard && hand == 1 && board[i] == 0) {
-          scoreToAdd += capture(i, board);
-        } else {
-          // Place 1 stone from hand
-          board[i]++;
-        }
-        hand--;
-      }
-      // If board limit is reached and there's still leftover hand,
-      // increase score (large pit) and continue to opponent's board
-      if (i > boardLimit) {
-        if (isPlayerBoard) {
-          // Place to large pit
-          scoreToAdd++;
-          hand--;
-
-          if (hand == 0) {
-            isFinalOnLargePit = true;
-          }
-        }
-        // Switch board
-        isPlayerBoard = !isPlayerBoard;
-        currentPlayerNumber = isPlayerBoard ? playerNumber : opponentNumber;
-        boardLimit = getPlayerMaxBoardLimit(currentPlayerNumber);
-        i = getPlayerBoardIndex(currentPlayerNumber) - 1;
-      }
-      // Move to next pit
-      i++;
-    }
-
-    // Calculate score for current turn
-    player.addScore(scoreToAdd);
-
-    // Increment turn and switch to next player's turn
+    //Increment turn and switch to next player's turn
     game.addTotalTurn(1);
 
-    // If last stone landed on large pit, current player will get another turn
-    if (!isFinalOnLargePit) {
-      game.setPlayerTurn(opponentNumber);
-    }
-
-    // Check for finish condition
+    //Verify the finish condition
     finish(game);
 
-    // Updates
+    //Update gameRepository
     playerService.savePlayer(player);
     return gameRepository.save(game);
+  }
+
+  private void iterateThroughNextPits(Game game, int playerNumber, int pitIndex, Player player) {
+    //Fetch the current player's max board index
+    int boardLimit = getPlayerMaxBoardLimit(playerNumber);
+    //Fetch the opponent player number
+    int opponentNumber = (playerNumber == Constants.PLAYER_ONE_NUM) ? Constants.PLAYER_TWO_NUM : Constants.PLAYER_ONE_NUM;
+
+    List<Integer> board = game.getBoard();
+    //Get the count of stones from the selected pit
+    int handValue = board.get(pitIndex);
+    //Set the selected pit to 0 stones
+    board.set(pitIndex, 0);
+    //Initialize the loop index
+    int loopIndex = pitIndex + 1;
+
+    //Default values
+    int scoreToAdd = 0;
+    boolean switchBoard = false;
+    boolean lastStoneOnLargePitFlag = false;
+    int currentPlayerNumber;
+
+    while (handValue > 0) {
+      //When the current index is not the large pit
+      if (loopIndex <= boardLimit) {
+        //Check for the capture condition
+        if (!switchBoard && handValue == 1 && board.get(loopIndex) == 0) {
+          scoreToAdd += capture(loopIndex, board);
+        } else {
+          //Take 1 stone from handValue
+          board.set(loopIndex, board.get(loopIndex) + 1);
+        }
+        handValue--;
+      }
+      //When the board limit is reached and there's still leftover handValue, then increase score (large pit) and continue to opponent's board
+      if (loopIndex > boardLimit) {
+        if (!switchBoard) {
+          //Place on large pit
+          scoreToAdd++;
+          handValue--;
+          //When the last stone is on the large pit
+          if (handValue == 0) {
+            lastStoneOnLargePitFlag = true;
+          }
+        }
+        //Do a switch board to continue to opponent's board
+        switchBoard = !switchBoard;
+        currentPlayerNumber = !switchBoard ? playerNumber : opponentNumber;
+        boardLimit = getPlayerMaxBoardLimit(currentPlayerNumber);
+        loopIndex = getPlayerBoardIndex(currentPlayerNumber) - 1;
+      }
+      //Proceed to the next pit
+      loopIndex++;
+    }
+
+    //Calculate score of the current turn
+    player.addScore(scoreToAdd);
+
+    //If last stone landed on large pit, current player will get another turn
+    if (!lastStoneOnLargePitFlag) {
+      game.setPlayerTurn(opponentNumber);
+    }
   }
 
   /**
@@ -208,31 +226,31 @@ public class GameServiceImpl implements GameService {
    * @param board
    * @return true/false
    */
-  private boolean anyEmptyBoard(int[] board) {
+  private boolean anyEmptyBoard(List<Integer> board) {
     boolean isPlayerOneEmpty;
     boolean isPlayerTwoEmpty;
     //Used IntStream range to make the start inclusive and the end exclusive
     isPlayerOneEmpty = IntStream
         .range(getPlayerMinBoardLimit(Constants.PLAYER_ONE_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_ONE_NUM))
-        .noneMatch(i -> board[i] != 0);
+        .noneMatch(i -> board.get(i) != 0);
     isPlayerTwoEmpty = IntStream
         .range(getPlayerMinBoardLimit(Constants.PLAYER_TWO_NUM), getPlayerMaxBoardLimit(Constants.PLAYER_TWO_NUM))
-        .noneMatch(i -> board[i] != 0);
+        .noneMatch(i -> board.get(i) != 0);
     return isPlayerOneEmpty || isPlayerTwoEmpty;
   }
 
   /**
-   * Collects all stones in all player's pit and place it into large pit.<br>
+   * Collects all stones in all player's pit and processPick it into large pit.<br>
    * Triggered when finish condition is reached.
    * 
    * @param playerNumber
    * @param board
    * @return
    */
-  private int collectStones(int playerNumber, int[] board) {
+  private int collectStones(int playerNumber, List<Integer> board) {
     return IntStream
         .rangeClosed(getPlayerMinBoardLimit(playerNumber), getPlayerMaxBoardLimit(playerNumber))
-        .map(i -> board[i]).sum();
+        .map(i -> board.get(i)).sum();
   }
 
   /**
@@ -242,17 +260,13 @@ public class GameServiceImpl implements GameService {
    * @param game
    */
   private void finish(Game game) {
-    int[] board = game.getBoard();
-
     // Check both player's board if there's any empty row.
-    if (anyEmptyBoard(board)) {
+    if (anyEmptyBoard(game.getBoard())) {
       Player playerOne = game.getPlayerOne();
       Player playerTwo = game.getPlayerTwo();
-
       // Calculate final score
-      playerOne.addScore(collectStones(playerOne.getNumber(), board));
-      playerTwo.addScore(collectStones(playerTwo.getNumber(), board));
-
+      playerOne.addScore(collectStones(playerOne.getNumber(), game.getBoard()));
+      playerTwo.addScore(collectStones(playerTwo.getNumber(), game.getBoard()));
       // Determine winner and end the game
       game.setWinner(playerOne.getScore() > playerTwo.getScore() ? playerOne : playerTwo);
       game.setStatus(GameStatus.END.getName());
@@ -267,16 +281,16 @@ public class GameServiceImpl implements GameService {
    * @param board
    * @return
    */
-  private int capture(int index, int[] board) {
+  private int capture(int index, List<Integer> board) {
     // Get opponent's pit index
     int oppositePitIndex = getOppositePitIndex(index);
 
     // Put all stones in current pit and opposite pit to large pit
-    int scoreToAdd = board[oppositePitIndex] + 1;
+    int scoreToAdd = board.get(oppositePitIndex) + 1;
 
     // Empty current pit and opposite pit
-    board[index] = 0;
-    board[oppositePitIndex] = 0;
+    board.set(index, 0);
+    board.set(oppositePitIndex, 0);
     return scoreToAdd;
   }
 
@@ -293,22 +307,7 @@ public class GameServiceImpl implements GameService {
     }
   }
 
-  @Override
-  public GameBean getGameBeansById(UUID gameId) {
-    return modelMapper.map(getGame(gameId), GameBean.class);
-  }
-
   private Game saveGame(Game game) {
     return gameRepository.save(game);
   }
-
-  @Override
-  public GameBean start(String playerOneName, String playerTwoName) {
-
-    Player playerOne = playerService.createNewPlayer(playerOneName, Constants.PLAYER_ONE_NUM);
-    Player playerTwo = playerService.createNewPlayer(playerTwoName, Constants.PLAYER_TWO_NUM);
-    Game game = saveGame(new Game(playerOne, playerTwo));
-    return modelMapper.map(game, GameBean.class);
-  }
-
 }

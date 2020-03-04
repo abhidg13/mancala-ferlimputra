@@ -1,5 +1,6 @@
 package com.game.mancala.beans;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,7 @@ public class GameBean {
 
   private UUID id;
   private String status;
-  private int[] board;
+  private List<Integer> board;
   private int playerTurn;
   private int totalTurn;
   private int index;
@@ -20,7 +21,7 @@ public class GameBean {
     super();
   }
 
-  public GameBean(UUID id, String status, int[] board, int playerTurn, int totalTurn) {
+  public GameBean(UUID id, String status, List<Integer> board, int playerTurn, int totalTurn) {
     this.id = id;
     this.status = status;
     this.board = board;
@@ -60,11 +61,11 @@ public class GameBean {
     this.status = status;
   }
 
-  public int[] getBoard() {
+  public List<Integer> getBoard() {
     return this.board;
   }
 
-  public void setBoard(int[] board) {
+  public void setBoard(List<Integer> board) {
     this.board = board;
   }
 
