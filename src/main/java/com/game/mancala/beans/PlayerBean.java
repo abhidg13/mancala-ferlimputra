@@ -3,7 +3,7 @@ package com.game.mancala.beans;
 import java.util.UUID;
 
 /**
- * PlayerBeans
+ * The bean class for the Player model.
  */
 public class PlayerBean {
 

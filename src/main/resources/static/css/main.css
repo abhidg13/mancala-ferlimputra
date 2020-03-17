@@ -1,11 +1,11 @@
 header {
   text-align: center;
-  color: rgb(68, 38, 11);
+  color: rgb(1, 7, 74);
 }
 
 .menu-item {
-  color: rgb(238, 196, 9);
-  background: rgb(68, 38, 11);
+  color: rgb(173, 180, 255);
+  background: rgb(1, 7, 74);
   cursor: pointer;
   display: block;
   margin: 20px auto auto;
@@ -16,14 +16,14 @@ header {
 }
 
 .menu-item:hover {
-  color: rgb(68, 38, 11);
-  background: rgb(255, 187, 0);
+  color: rgb(1, 7, 74);
+  background: rgb(173, 180, 255);
 }
 
 .board {
   border: 5px solid black;
   border-radius: 15%;
-  background: rgb(139, 72, 9);
+  background: rgb(2, 14, 150);
   min-width: 400px;
   margin: auto;
   text-align: center;
@@ -31,14 +31,14 @@ header {
 }
 
 .player-row {
-  color: rgb(238, 196, 9);
-  background: rgb(68, 38, 11);
+  color: rgb(173, 180, 255);
+  background: rgb(1, 7, 74);
 }
 
 .large-pit {
   min-width: 100px;
-  color: black;
-  background: rgb(231, 157, 87);
+  color: white;
+  background: rgb(84, 99, 255);
   border: 1px solid black;
   border-radius: 50%;
   font-size: 22px;
@@ -47,16 +47,16 @@ header {
 .pit {
   width: 75px;
   height: 75px;
-  color: black;
+  color: white;
   cursor: pointer;
-  background: rgb(231, 157, 87);
+  background: rgb(84, 99, 255);
   border: 1px solid black;
   border-radius: 50%;
   font-size: 22px;
 }
 
 .pit:hover {
-  background: rgb(255, 187, 0);
+  background: rgb(173, 180, 255);
 }
 
 #player1-row td {
@@ -75,4 +75,9 @@ header {
   50% {
     opacity: 0;
   }
+}
+
+h3 {
+  padding: 0px;
+  margin: 5px;
 }

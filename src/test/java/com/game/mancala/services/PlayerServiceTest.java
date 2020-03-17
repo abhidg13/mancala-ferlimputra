@@ -35,12 +35,12 @@ public class PlayerServiceTest {
   @Test
   public void createNewPlayerTest() {
     // Setup
-    String playerName = "ABC";
-    int playerNumber = Constants.PLAYER_ONE_NUM;
-    ArgumentCaptor<Player> captor = ArgumentCaptor.forClass(Player.class);
+    var playerName = "ABC";
+    var playerNumber = Constants.PLAYER_ONE_NUM;
+    var captor = ArgumentCaptor.forClass(Player.class);
 
     // Create new player
-    playerServiceImpl.createNewPlayer(playerName, playerNumber);
+    playerServiceImpl.savePlayer(new Player(playerName, playerNumber));
 
     // Verify
     verify(playerRepository).save(captor.capture());
@@ -52,10 +52,10 @@ public class PlayerServiceTest {
   @Test
   public void convertPlayerBeansToPlayerTest() {
     // Setup
-    PlayerBean playerBean = new PlayerBean("A", 100, Constants.PLAYER_ONE_NUM);
+    var playerBean = new PlayerBean("A", 100, Constants.PLAYER_ONE_NUM);
 
     // Map playerBean to Player.class
-    Player player = modelMapper.map(playerBean, Player.class);
+    var player = modelMapper.map(playerBean, Player.class);
 
     // Verify
     assertEquals(player.getName(), playerBean.getName());

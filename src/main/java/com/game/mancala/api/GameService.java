@@ -4,15 +4,12 @@ import java.util.UUID;
 import com.game.mancala.beans.GameBean;
 
 /**
- * GameService
+ * Service interface for Game related user actions.
  */
 public interface GameService {
 
   /**
-   * First phase of the game<br>
-   * <br>
    * Player pick a pit from their board and take all stones in that pit.
-   * 
    * @param gameId
    * @param playerNumber
    * @param index
@@ -20,18 +17,15 @@ public interface GameService {
   GameBean pick(UUID gameId, int playerNumber, int index);
 
   /**
-   * Get an existing game by id and convert it to bean.
-   * 
+   * Get an existing game by id and convert it to the bean object.
    * @param gameId
-   * @return
    */
   GameBean getGameBeansById(UUID gameId);
 
   /**
-   * Starts a new game.
-   *
-   * @return
+   * Starts a new game. Initializes the game board and creates the Player objects.
+   * @param playerOneName
+   * @param playerTwoName
    */
   GameBean start(String playerOneName, String playerTwoName);
-
 }

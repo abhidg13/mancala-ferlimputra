@@ -8,7 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * Player
+ * Player model.
+ * Model container defines the holder for the attributes and map it to the database entity with spring boot hibernate.
  */
 @Entity
 public class Player {

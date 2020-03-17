@@ -1,7 +1,7 @@
 package com.game.mancala.exceptions;
 
 /**
- * Custom exception thrown with errors.
+ * Custom exception class to throw game error conditions.
  */
 public class GameException extends RuntimeException {
 

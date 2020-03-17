@@ -20,8 +20,10 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * GameController
+ * This is the sprint boot RESTful web service controller for the Game application.
+ * The request handling method of the controller class automatically serializes return objects into HttpResponse.
  */
+
 @RestController
 @RequestMapping("game")
 public class Controller {
@@ -31,7 +33,7 @@ public class Controller {
 
   @GetMapping("/play/{gameId}")
   public ModelAndView fetchGamePage(@PathVariable("gameId") String gameId) {
-    ModelAndView modelAndView = new ModelAndView("play");
+    var modelAndView = new ModelAndView("play");
     modelAndView.addObject("gameId", gameId);
     return modelAndView;
   }
@@ -39,7 +41,7 @@ public class Controller {
   @PostMapping("/start/{playerOneName}/{playerTwoName}")
   public Map<String, String> start(@PathVariable("playerOneName") String playerOneName,
       @PathVariable("playerTwoName") String playerTwoName) {
-    String gameId = gameService.start(playerOneName, playerTwoName).getId().toString();
+    var gameId = gameService.start(playerOneName, playerTwoName).getId().toString();
     return Collections.singletonMap("gameId", gameId);
   }
 

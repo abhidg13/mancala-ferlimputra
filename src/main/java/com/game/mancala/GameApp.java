@@ -6,6 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/**
+ *  This class runs the project as a Spring Boot Application and get rid of configuration files.
+ */
 @SpringBootApplication
 public class GameApp {
 
@@ -15,9 +18,8 @@ public class GameApp {
 
   @Bean
   public ModelMapper modelMapper() {
-    ModelMapper modelMapper = new ModelMapper();
+    var modelMapper = new ModelMapper();
     modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
     return modelMapper;
   }
-
 }

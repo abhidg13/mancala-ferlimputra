@@ -1,14 +1,11 @@
 package com.game.mancala.models;
 
-import static com.game.mancala.constants.Constants.*;
+import static com.game.mancala.constants.Constants.PITS_PER_ROW;
+import static com.game.mancala.constants.Constants.TOTAL_PITS;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -20,7 +17,8 @@ import com.game.mancala.enums.GameStatus;
 import org.springframework.lang.Nullable;
 
 /**
- * Game
+ * Game model.
+ * Model container defines the holder for the attributes and map it to the database entity with spring boot hibernate.
  */
 @Entity
 public class Game {
@@ -58,11 +56,10 @@ public class Game {
     super();
     status = GameStatus.IN_PROGRESS.getName(); //Set game status to IN_PROGRESS
     //Set 6 stones in each of the 12 pits
-    //board = IntStream.of(new int[TOTAL_PITS]).map(i -> PITS_PER_ROW).toArray();
-    board = Stream.generate(String::new)
+    board = Stream.generate(String::new) //Used Java 8 method reference feature
             .limit(TOTAL_PITS)
             .map(s -> PITS_PER_ROW)
-            .collect(Collectors.toCollection(LinkedList::new));
+            .collect(Collectors.toList());
     totalTurn = 0;
   }
 

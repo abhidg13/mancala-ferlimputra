@@ -1,9 +1,7 @@
 package com.game.mancala.constants;
 
 /**
- * Helper class to store game related constants.
- * 
- * GameConstants
+ * Class to store the constants.
  */
 public class Constants {
 

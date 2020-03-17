@@ -1,7 +1,7 @@
 package com.game.mancala.enums;
 
 /**
- * GameStatus
+ * Enum class to maintain the game status.
  */
 public enum GameStatus {
   IN_PROGRESS ("Game in progress..."),

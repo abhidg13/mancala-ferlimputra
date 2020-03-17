@@ -34,11 +34,11 @@ const activateTurnDisplayIndicator = playerTurn => {
         `player${playerTurn === 0 ? 2 : 1}-row`
     );
 
-    playerRow.style.color = "rgb(68, 38, 11)";
-    playerRow.style.background = "rgb(238, 196, 9)";
+    playerRow.style.color = "rgb(1, 7, 74)";
+    playerRow.style.background = "rgb(173, 180, 255)";
 
-    opponentRow.style.color = "rgb(238, 196, 9)";
-    opponentRow.style.background = "rgb(68, 38, 11)";
+    opponentRow.style.color = "rgb(173, 180, 255)";
+    opponentRow.style.background = "rgb(1, 7, 74)";
 
     //Make the player name blink as per the turn
     const playerNameElement = document.getElementById(`player${playerTurn + 1}-name`);

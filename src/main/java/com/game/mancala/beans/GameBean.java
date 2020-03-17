@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * GameBeans
+ * The bean class for the Game model.
  */
 public class GameBean {
 
